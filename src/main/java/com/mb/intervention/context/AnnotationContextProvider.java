@@ -22,8 +22,6 @@ import com.mb.intervention.annotations.Configuration;
 import com.mb.intervention.annotations.Dynamic;
 import com.mb.intervention.annotations.Exclude;
 import com.mb.intervention.log.MyLogger;
-import java.io.IOException;
-import java.util.Properties;
 
 public class AnnotationContextProvider extends ContextProvider {
 
@@ -36,41 +34,7 @@ public class AnnotationContextProvider extends ContextProvider {
         methodAnnotationDiscoveryListener = new MethodAnnotationScannerListener();
     }
 
-    @Override
-    public Context getContext() {
-
-        if (context.getConfiguration() == null) {
-            context.setConfiguration(createDefaultConfiguration());
-        }
-
-
-        return super.getContext();
-    }
-
-    private static Context.Configuration createDefaultConfiguration() {
-
-        Context.Configuration configuration = null;
-        
-        try {
-            Properties properties = new Properties();
-            properties.load(AnnotationContextProvider.class.getResourceAsStream("../defaults.properties"));
-            
-            configuration=new Context.Configuration();
-            configuration.setDefaultScript(properties.getProperty("defaultScript"));
-            configuration.setDynamicLanguage(properties.getProperty("dynamicLanguage"));
-            configuration.setScriptExtension(properties.getProperty("scriptExtension"));
-            configuration.setPostInvokeFunction(properties.getProperty("postInvokeFunction"));
-            configuration.setPreInvokeFunction(properties.getProperty("preInvokeFunction"));
-            configuration.setInterceptionPolicy(InterceptionPolicy.valueOf(properties.getProperty("interceptionPolicy").toUpperCase()));
-            
-            
-        } catch (IOException ex) {
-            MyLogger.severe(AnnotationContextProvider.class.getName(), "exception_occurred", ex.getMessage());
-        }
-        
-        return configuration;
-    }
-
+  
     @Override
     public void build() {
 

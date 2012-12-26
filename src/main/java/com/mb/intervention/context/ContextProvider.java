@@ -28,7 +28,12 @@ public abstract class ContextProvider {
     
     public abstract void build();
 
-    public Context getContext() {
+      public Context getContext() {
+
+        if (context.getConfiguration() == null) {
+            context.setConfiguration(Context.Configuration.getDefault());
+        }
+
         return context;
     }
 
