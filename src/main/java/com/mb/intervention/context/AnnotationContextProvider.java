@@ -21,7 +21,7 @@ import com.impetus.annovention.listener.MethodAnnotationDiscoveryListener;
 import com.mb.intervention.annotations.Configuration;
 import com.mb.intervention.annotations.Dynamic;
 import com.mb.intervention.annotations.Exclude;
-import com.mb.intervention.log.MyLogger;
+import com.mb.intervention.log.LocalizedLogger;
 
 public class AnnotationContextProvider extends ContextProvider {
 
@@ -73,11 +73,11 @@ public class AnnotationContextProvider extends ContextProvider {
                         context.addContextEntry(contextEntry);
 
                     } else {
-                        MyLogger.severe(className, "dynamic_class_id_already_registered", dynamicClassKey);
+                        LocalizedLogger.severe(className, "dynamic_class_id_already_registered", dynamicClassKey);
                     }
 
                 } catch (ClassNotFoundException ex) {
-                    MyLogger.severe(className, "exception_occurred", ex);
+                    LocalizedLogger.severe(className, "exception_occurred", ex);
 
                 }
             } else if (annotationName.equals(Configuration.class.getName())) {
@@ -99,11 +99,11 @@ public class AnnotationContextProvider extends ContextProvider {
 
                         context.setConfiguration(configuration);
                     } else {
-                        MyLogger.warn(className, "configuration_already_defined");
+                        LocalizedLogger.warn(className, "configuration_already_defined");
                     }
 
                 } catch (ClassNotFoundException ex) {
-                    MyLogger.severe(className, "exception_occurred", ex);
+                    LocalizedLogger.severe(className, "exception_occurred", ex);
 
                 }
             }
@@ -125,7 +125,7 @@ public class AnnotationContextProvider extends ContextProvider {
                 context.addExcludedMethod(dynamicClass, methodName);
 
             } catch (ClassNotFoundException ex) {
-                MyLogger.severe(className, "exception_occurred", ex);
+                LocalizedLogger.severe(className, "exception_occurred", ex);
             }
         }
 

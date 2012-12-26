@@ -19,7 +19,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
-public final class MyLogger {
+public final class LocalizedLogger {
 
     public static void log(String className, Level level, String message, Object... params) {
    

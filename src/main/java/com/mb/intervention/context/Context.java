@@ -16,7 +16,7 @@
  */
 package com.mb.intervention.context;
 
-import com.mb.intervention.log.MyLogger;
+import com.mb.intervention.log.LocalizedLogger;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -154,7 +154,7 @@ public class Context {
                     defaultConfiguration.setInterceptionPolicy(InterceptionPolicy.valueOf(properties.getProperty("interceptionPolicy").toUpperCase()));
 
                 } catch (IOException ex) {
-                    MyLogger.severe(Configuration.class.getName(), "exception_occurred", ex.getMessage());
+                    LocalizedLogger.severe(Configuration.class.getName(), "exception_occurred", ex.getMessage());
                 }
             }
 

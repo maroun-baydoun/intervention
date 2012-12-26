@@ -20,7 +20,7 @@ import com.mb.intervention.context.Context;
 import com.mb.intervention.context.ContextProvider;
 import com.mb.intervention.context.InterceptionPolicy;
 import com.mb.intervention.context.JsonContextProvider;
-import com.mb.intervention.log.MyLogger;
+import com.mb.intervention.log.LocalizedLogger;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
@@ -129,10 +129,10 @@ public final class ObjectFactory {
                 createdObject = proxyFactory.create(new Class[0], new Object[0], methodHandler);
 
             } catch (Exception ex) {
-                MyLogger.severe(getClass().getName(), "exception_occurred", ex);
+                LocalizedLogger.severe(getClass().getName(), "exception_occurred", ex);
             }
         } else {
-            MyLogger.severe(getClass().getName(), "dynamic_class_not_registered", dynamicClassKey);
+            LocalizedLogger.severe(getClass().getName(), "dynamic_class_not_registered", dynamicClassKey);
         }
 
         return createdObject;

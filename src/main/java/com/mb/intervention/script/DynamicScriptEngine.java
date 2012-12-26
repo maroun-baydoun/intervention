@@ -16,7 +16,7 @@
 package com.mb.intervention.script;
 
 import com.mb.intervention.ObjectFactory;
-import com.mb.intervention.log.MyLogger;
+import com.mb.intervention.log.LocalizedLogger;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -78,7 +78,7 @@ public class DynamicScriptEngine {
 
             } else {
                 if (!scriptName.equals(DEFAULT_SCRIPT)) {
-                    MyLogger.severe(DynamicScriptEngine.class.getName(), "script_file_not_found", scriptName);
+                    LocalizedLogger.severe(DynamicScriptEngine.class.getName(), "script_file_not_found", scriptName);
                 }
 
             }
@@ -102,7 +102,7 @@ public class DynamicScriptEngine {
             }
         } catch (ScriptException ex) {
             scriptOk = false;
-            MyLogger.severe(DynamicScriptEngine.class.getName(), "script_exception_occurred", ex.getMessage(), scriptName);
+            LocalizedLogger.severe(DynamicScriptEngine.class.getName(), "script_exception_occurred", ex.getMessage(), scriptName);
         }
 
         return scriptOk;
@@ -116,9 +116,9 @@ public class DynamicScriptEngine {
         try {
             functionReturn = invocableEngine.invokeFunction(functionName, args);
         } catch (ScriptException ex) {
-            MyLogger.severe(DynamicScriptEngine.class.getName(), "script_exception_occurred", ex.getMessage(), "");
+            LocalizedLogger.severe(DynamicScriptEngine.class.getName(), "script_exception_occurred", ex.getMessage(), "");
         } catch (NoSuchMethodException ex) {
-            MyLogger.severe(DynamicScriptEngine.class.getName(), "script_function_not_found", functionName);
+            LocalizedLogger.severe(DynamicScriptEngine.class.getName(), "script_function_not_found", functionName);
         }
 
         return functionReturn;
