@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-public class Context {
+public class Context{
 
     private Configuration configuration;
     private Map<String, ContextEntry> contextEntires;
@@ -159,6 +159,20 @@ public class Context {
             }
 
             return defaultConfiguration;
+        }
+        
+        public Configuration merge(Configuration other){
+            
+            Configuration result=new  Configuration();
+            
+            result.defaultScript = (defaultScript == null ? other.defaultScript : defaultScript);
+            result.dynamicLanguage = (dynamicLanguage == null ? other.dynamicLanguage : dynamicLanguage);
+            result.interceptionPolicy = (interceptionPolicy == null ? other.interceptionPolicy : interceptionPolicy);
+            result.postInvokeFunction = (postInvokeFunction == null ? other.postInvokeFunction : postInvokeFunction);
+            result.preInvokeFunction = (preInvokeFunction == null ? other.preInvokeFunction : preInvokeFunction);
+            result.scriptExtension = (scriptExtension == null ? other.scriptExtension : scriptExtension);
+            
+            return result;
         }
 
         public String getDefaultScript() {

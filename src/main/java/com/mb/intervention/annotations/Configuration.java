@@ -1,12 +1,3 @@
-
-package com.mb.intervention.annotations;
-
-import com.mb.intervention.context.InterceptionPolicy;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-
 /**Copyright 2012 Maroun Baydoun
 
    Licensed under the Apache License, Version 2.0 (the "License");
@@ -23,18 +14,29 @@ import java.lang.annotation.Target;
 **/
 
 
+package com.mb.intervention.annotations;
+
+import com.mb.intervention.context.InterceptionPolicy;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+
+
+
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface Configuration {
 
-    public String defaultScript() default "default";
-    public String scriptLocation() default "local";
-    public String dynamicLanguage() default "JavaScript";
-    public String scriptExtension() default "js";
+    public String defaultScript() default "";
+    public String scriptLocation() default "";
+    public String dynamicLanguage() default "";
+    public String scriptExtension() default "";
     
     
-    public String preInvokeFunction() default "preInvoke";
-    public String postInvokeFunction() default "postInvoke";
+    public String preInvokeFunction() default "";
+    public String postInvokeFunction() default "";
     public InterceptionPolicy interceptionPolicy() default InterceptionPolicy.ALL;
     
    

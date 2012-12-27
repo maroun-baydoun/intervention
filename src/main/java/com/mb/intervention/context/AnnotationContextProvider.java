@@ -90,13 +90,15 @@ public class AnnotationContextProvider extends ContextProvider {
                         Configuration configurationAnnotation = (Configuration) classWithConfiguration.getAnnotation(Configuration.class);
 
                         Context.Configuration configuration = new Context.Configuration();
-                        configuration.setDefaultScript(configurationAnnotation.defaultScript());
-                        configuration.setDynamicLanguage(configurationAnnotation.dynamicLanguage());
-                        configuration.setScriptExtension(configurationAnnotation.scriptExtension());
-                        configuration.setPostInvokeFunction(configurationAnnotation.postInvokeFunction());
-                        configuration.setPreInvokeFunction(configurationAnnotation.preInvokeFunction());
+                        configuration.setDefaultScript(configurationAnnotation.defaultScript().length()==0?null:configurationAnnotation.defaultScript());
+                        configuration.setDynamicLanguage(configurationAnnotation.dynamicLanguage().length()==0?null:configurationAnnotation.dynamicLanguage());
+                        configuration.setScriptExtension(configurationAnnotation.scriptExtension().length()==0?null:configurationAnnotation.scriptExtension());
+                        configuration.setPostInvokeFunction(configurationAnnotation.postInvokeFunction().length()==0?null:configurationAnnotation.postInvokeFunction());
+                        configuration.setPreInvokeFunction(configurationAnnotation.preInvokeFunction().length()==0?null:configurationAnnotation.preInvokeFunction());
                         configuration.setInterceptionPolicy(configurationAnnotation.interceptionPolicy());
-
+                        
+                        configuration=configuration.merge(Context.Configuration.getDefault());
+                        
                         context.setConfiguration(configuration);
                     } else {
                         LocalizedLogger.warn(className, "configuration_already_defined");
