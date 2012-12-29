@@ -16,7 +16,10 @@
 package com.mb.intervention.script;
 
 import com.mb.intervention.ObjectFactory;
+import com.mb.intervention.context.Context;
 import com.mb.intervention.log.LocalizedLogger;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -29,6 +32,9 @@ public class DynamicScriptEngine {
     private static final String DYNAMIC_LANGUAGE=ObjectFactory.getInstance().getContext().getConfiguration().getDynamicLanguage();
     private static final String SCRIPT_EXTENSION=ObjectFactory.getInstance().getContext().getConfiguration().getScriptExtension();
     private static final String DEFAULT_SCRIPT=ObjectFactory.getInstance().getContext().getConfiguration().getDefaultScript();
+    private static final String SCRIPT_LOCATION=ObjectFactory.getInstance().getContext().getConfiguration().getScriptLocation();
+    private static final String SCRIPT_LOCATION_TYPE=ObjectFactory.getInstance().getContext().getConfiguration().getScriptLocationType();
+    
     
     private static DynamicScriptEngine instance;
     private static DynamicScriptEngine defaultInstance;
@@ -36,6 +42,8 @@ public class DynamicScriptEngine {
     private Invocable invocableEngine;
     private Compilable compilableEngine;
     private Map<String, CompiledScript> compiledScripts;
+    
+    
 
     private DynamicScriptEngine(String language) {
 
@@ -68,8 +76,8 @@ public class DynamicScriptEngine {
         CompiledScript script = compiledScripts.get(scriptName);
 
         if (script == null) {
-            InputStream scriptStream = getClass().getResourceAsStream("/" + scriptName +"."+SCRIPT_EXTENSION);
-
+            InputStream scriptStream =getScriptAsStream(scriptName);
+            
             if (scriptStream != null) {
                 Reader scriptReader = new InputStreamReader(scriptStream);
 
@@ -78,7 +86,7 @@ public class DynamicScriptEngine {
 
             } else {
                 if (!scriptName.equals(DEFAULT_SCRIPT)) {
-                    LocalizedLogger.severe(DynamicScriptEngine.class.getName(), "script_file_not_found", scriptName);
+                    LocalizedLogger.severe(DynamicScriptEngine.class.getName(), "script_file_not_found", scriptName,SCRIPT_EXTENSION,SCRIPT_LOCATION);
                 }
 
             }
@@ -87,6 +95,30 @@ public class DynamicScriptEngine {
         return script;
     }
 
+    private static InputStream getScriptAsStream(String scriptName){
+     
+        InputStream stream=null;
+        
+       
+        if(SCRIPT_LOCATION_TYPE.equals(Context.Configuration.SCRIPT_LOCATION_CLASSPATH)){
+            
+            stream=DynamicScriptEngine.class.getResourceAsStream(SCRIPT_LOCATION+""+scriptName+"."+SCRIPT_EXTENSION);
+        }
+        else if(SCRIPT_LOCATION_TYPE.equals(Context.Configuration.SCRIPT_LOCATION_FOLDER)){
+            
+            try{
+                stream=new FileInputStream(SCRIPT_LOCATION+""+scriptName+"."+SCRIPT_EXTENSION);
+            }
+            catch(FileNotFoundException ex){
+                
+            }
+        }
+        
+        
+        
+        return stream;
+    }
+    
     public boolean evalScript(String scriptName) {
 
 

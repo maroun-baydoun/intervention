@@ -18,6 +18,7 @@ package com.mb.intervention.context;
 
 import com.mb.intervention.log.LocalizedLogger;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -133,8 +134,14 @@ public class Context{
         private String scriptExtension;
         private String preInvokeFunction;
         private String postInvokeFunction;
+        private String scriptLocation;
+        private String scriptLocationType;
         private InterceptionPolicy interceptionPolicy;
         private static Configuration defaultConfiguration;
+        
+        public static final String SCRIPT_LOCATION_CLASSPATH="classpath";
+        public static final String SCRIPT_LOCATION_FOLDER="folder";
+        public static final String SCRIPT_LOCATION_DELIMITER=":";
 
         public static Configuration getDefault() {
 
@@ -152,7 +159,8 @@ public class Context{
                     defaultConfiguration.setPostInvokeFunction(properties.getProperty("postInvokeFunction"));
                     defaultConfiguration.setPreInvokeFunction(properties.getProperty("preInvokeFunction"));
                     defaultConfiguration.setInterceptionPolicy(InterceptionPolicy.valueOf(properties.getProperty("interceptionPolicy").toUpperCase()));
-
+                    defaultConfiguration.setScriptLocation(properties.getProperty("scriptLocation"));
+                    
                 } catch (IOException ex) {
                     LocalizedLogger.severe(Configuration.class.getName(), "exception_occurred", ex.getMessage());
                 }
@@ -171,7 +179,9 @@ public class Context{
             result.postInvokeFunction = (postInvokeFunction == null ? other.postInvokeFunction : postInvokeFunction);
             result.preInvokeFunction = (preInvokeFunction == null ? other.preInvokeFunction : preInvokeFunction);
             result.scriptExtension = (scriptExtension == null ? other.scriptExtension : scriptExtension);
-            
+            result.scriptLocation = (scriptLocation == null ? other.scriptLocation : scriptLocation);
+            result.scriptLocationType=(scriptLocationType == null ? other.scriptLocationType : scriptLocationType);
+           
             return result;
         }
 
@@ -199,6 +209,17 @@ public class Context{
             return preInvokeFunction;
         }
 
+        public String getScriptLocation() {
+            return scriptLocation;
+        }
+
+        public String getScriptLocationType() {
+            return scriptLocationType;
+        }
+        
+        
+
+        
         public void setDefaultScript(String defaultScript) {
             this.defaultScript = defaultScript;
         }
@@ -222,5 +243,17 @@ public class Context{
         public void setPreInvokeFunction(String preInvokeFunction) {
             this.preInvokeFunction = preInvokeFunction;
         }
+
+        public void setScriptLocation(String scriptLocation) {
+            this.scriptLocation = scriptLocation;
+            
+            if(scriptLocation!=null){
+                this.scriptLocationType=scriptLocation.substring(0,scriptLocation.indexOf(SCRIPT_LOCATION_DELIMITER));
+                this.scriptLocation=scriptLocation.substring(scriptLocationType.length()+Context.Configuration.SCRIPT_LOCATION_DELIMITER.length());
+            }
+            
+        }
+        
+        
     }
 }

@@ -96,6 +96,7 @@ public class AnnotationContextProvider extends ContextProvider {
                         configuration.setPostInvokeFunction(configurationAnnotation.postInvokeFunction().length()==0?null:configurationAnnotation.postInvokeFunction());
                         configuration.setPreInvokeFunction(configurationAnnotation.preInvokeFunction().length()==0?null:configurationAnnotation.preInvokeFunction());
                         configuration.setInterceptionPolicy(configurationAnnotation.interceptionPolicy());
+                        configuration.setScriptLocation(configurationAnnotation.scriptLocation().length()==0?null:configurationAnnotation.scriptLocation());
                         
                         configuration=configuration.merge(Context.Configuration.getDefault());
                         
