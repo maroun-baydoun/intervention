@@ -33,6 +33,9 @@ public class Context{
     public Context() {
 
         contextEntires = new HashMap<String, ContextEntry>();
+        excludedMethods = new HashMap<Class<?>, List<String>>();
+        
+
     }
 
     public void addContextEntry(ContextEntry entry) {
@@ -54,10 +57,7 @@ public class Context{
 
     public void addExcludedMethod(Class<?> dynamicClass, String methodName) {
 
-        if (excludedMethods == null) {
-            excludedMethods = new HashMap<Class<?>, List<String>>();
-        }
-
+       
         List<String> classExcludedMethods = excludedMethods.get(dynamicClass);
 
         if (classExcludedMethods == null) {

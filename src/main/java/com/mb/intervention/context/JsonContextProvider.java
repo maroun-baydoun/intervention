@@ -12,7 +12,7 @@
  * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
  * License for the specific language governing permissions and limitations under
  * the License.
-*
+ *
  */
 package com.mb.intervention.context;
 
@@ -25,22 +25,22 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Objects;
 
 public class JsonContextProvider extends ContextProvider {
 
     private String jsonFile;
-    
-    private static final String CONFIG_PROP="config";
-    private static final String DYNAMIC_PROP="dynamic";
-    private static final String DYNAMIC_CLASS_PROP="class";
-    private static final String DYNAMIC_ID_PROP="id";
-    private static final String DYNAMIC_SCRIPT_PROP="script";
-    private static final String DYNAMIC_INTERCEPTION_POLICY_PROP="interceptionPolicy";
+    private static final String CONFIG_PROP = "config";
+    private static final String DYNAMIC_PROP = "dynamic";
+    private static final String DYNAMIC_CLASS_PROP = "class";
+    private static final String DYNAMIC_ID_PROP = "id";
+    private static final String DYNAMIC_SCRIPT_PROP = "script";
+    private static final String DYNAMIC_INTERCEPTION_POLICY_PROP = "interceptionPolicy";
 
     public JsonContextProvider(String jsonFile) {
         this.jsonFile = jsonFile;
     }
-    
+
     @Override
     public void build() {
         try {
@@ -50,39 +50,39 @@ public class JsonContextProvider extends ContextProvider {
 
                 InputStreamReader jsonInputStreamReader = new InputStreamReader(jsonInputStream);
                 BufferedReader jsonBufferedReader = new BufferedReader(jsonInputStreamReader);
-                
+
                 Gson gson = new Gson();
                 Map<String, Object> contextMap = gson.fromJson(jsonBufferedReader, Map.class);
-                
+
                 Map<String, String> configurationMap = (Map<String, String>) contextMap.get(CONFIG_PROP);
 
                 if (configurationMap != null) {
-                    
-                    Context.Configuration configuration=buildConfigurationFromMap(configurationMap);
-                    
+
+                    Context.Configuration configuration = buildConfigurationFromMap(configurationMap);
+
                     configurationDiscovered(configuration);
                 }
-                
-                ArrayList<Map<String,Object>> dynamicList=(ArrayList<Map<String,Object>>) contextMap.get(DYNAMIC_PROP);
-                
-                if(dynamicList!=null){
-                     for (Map<String, Object> dynamicMap : dynamicList) {
-                        Context.ContextEntry contextEntry= buildContextEntryFromMap(dynamicMap, context);
-                        
-                        if(contextEntry!=null){
-                        
+
+                ArrayList<Map<String, Object>> dynamicList = (ArrayList<Map<String, Object>>) contextMap.get(DYNAMIC_PROP);
+
+                if (dynamicList != null) {
+                    for (Map<String, Object> dynamicMap : dynamicList) {
+                        Context.ContextEntry contextEntry = buildContextEntryFromMap(dynamicMap, context);
+
+                        if (contextEntry != null) {
+
                             contextEntryDiscovered(contextEntry);
                         }
                     }
                 }
-                
-               
-                
+
+
+
             }
         } catch (JsonSyntaxException ex) {
-            
-             LocalizedLogger.severe(JsonContextProvider.class.getName(), "context_error", ex.getMessage());
-            
+
+            LocalizedLogger.severe(JsonContextProvider.class.getName(), "context_error", ex.getMessage());
+
         } catch (JsonIOException ex) {
             LocalizedLogger.severe(JsonContextProvider.class.getName(), "exception_occurred", ex.getMessage());
         }
@@ -102,45 +102,64 @@ public class JsonContextProvider extends ContextProvider {
 
         String configurationInterceptionPolicy = configurationMap.get("interceptionPolicy");
 
-        if(configurationInterceptionPolicy!=null){
-            
+        if (configurationInterceptionPolicy != null) {
+
             try {
 
                 configuration.setInterceptionPolicy(InterceptionPolicy.valueOf(configurationInterceptionPolicy));
-            } 
-            catch (IllegalArgumentException ex) {
-                
+            } catch (IllegalArgumentException ex) {
+
                 LocalizedLogger.severe(JsonContextProvider.class.getName(), "context_error", ex.getMessage());
             }
         }
-        
+
         return configuration;
     }
-    
-    private static Context.ContextEntry buildContextEntryFromMap(Map<String, Object> dynamicMap,Context context){
-        
-        Context.ContextEntry contextEntry=null;
-        
-        if(dynamicMap.containsKey(DYNAMIC_CLASS_PROP)){
-            String dynamicClassName=dynamicMap.get(DYNAMIC_CLASS_PROP).toString();
-            try{
-                Class<?> dynamiClass=Class.forName(dynamicClassName);
-                
-                contextEntry=new Context.ContextEntry();
+
+    private static Context.ContextEntry buildContextEntryFromMap(Map<String, Object> dynamicMap, Context context) {
+
+        Context.ContextEntry contextEntry = null;
+
+        if (dynamicMap.containsKey(DYNAMIC_CLASS_PROP)) {
+            String dynamicClassName = dynamicMap.get(DYNAMIC_CLASS_PROP).toString();
+            try {
+                Class<?> dynamiClass = Class.forName(dynamicClassName);
+
+                contextEntry = new Context.ContextEntry();
                 contextEntry.setDynamicClass(dynamiClass);
+
+            } catch (ClassNotFoundException ex) {
+                LocalizedLogger.severe(JsonContextProvider.class.getName(), "class_not_found", dynamicClassName);
             }
-            catch(ClassNotFoundException ex){
-               LocalizedLogger.severe(JsonContextProvider.class.getName(), "class_not_found", dynamicClassName);
+
+            if (contextEntry != null) {
+                contextEntry.setDynamicClassId((String) dynamicMap.get(DYNAMIC_ID_PROP));
+                contextEntry.setScript((String) dynamicMap.get(DYNAMIC_SCRIPT_PROP));
+
+                contextEntry.setInterceptionPolicy(InterceptionPolicy.ALL);
+
+                String configurationInterceptionPolicy = (String) dynamicMap.get(DYNAMIC_INTERCEPTION_POLICY_PROP);
+
+                if (configurationInterceptionPolicy != null) {
+
+                    try {
+
+                        contextEntry.setInterceptionPolicy(InterceptionPolicy.valueOf(configurationInterceptionPolicy));
+                    } catch (IllegalArgumentException ex) {
+
+                        LocalizedLogger.severe(JsonContextProvider.class.getName(), "context_error", ex.getMessage());
+                    }
+                }
+
             }
+        } else {
+
+            LocalizedLogger.severe(JsonContextProvider.class.getName(), "context_property_required","class");
         }
-        
-        if(contextEntry!=null){
-            contextEntry.setDynamicClassId(dynamicMap.get("id").toString());
-            contextEntry.setInterceptionPolicy(InterceptionPolicy.ALL);
-            contextEntry.setScript(CONFIG_PROP);
-        }
-        
-       
+
+
+
+
         return contextEntry;
     }
 }

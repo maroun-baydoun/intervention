@@ -40,7 +40,7 @@ public abstract class ContextProvider {
 
     protected void contextEntryDiscovered(Context.ContextEntry contextEntry) {
 
-        String dynamicClassKey = contextEntry.getDynamicClassId().length() > 0 ? contextEntry.getDynamicClassId() : contextEntry.getDynamicClass().getName();
+        String dynamicClassKey = contextEntry.getDynamicClassId()!=null && contextEntry.getDynamicClassId().length() > 0 ? contextEntry.getDynamicClassId() : contextEntry.getDynamicClass().getName();
 
 
         if (!context.containsContextEntry(dynamicClassKey)) {
