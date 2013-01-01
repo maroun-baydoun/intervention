@@ -18,7 +18,6 @@ package com.mb.intervention.context;
 
 import com.mb.intervention.log.LocalizedLogger;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -173,13 +172,13 @@ public class Context{
             
             Configuration result=new  Configuration();
             
-            result.defaultScript = (defaultScript == null ? other.defaultScript : defaultScript);
-            result.dynamicLanguage = (dynamicLanguage == null ? other.dynamicLanguage : dynamicLanguage);
+            result.defaultScript = (defaultScript == null || defaultScript.length()==0 ? other.defaultScript : defaultScript);
+            result.dynamicLanguage = (dynamicLanguage == null || dynamicLanguage.length()==0 ? other.dynamicLanguage : dynamicLanguage);
             result.interceptionPolicy = (interceptionPolicy == null ? other.interceptionPolicy : interceptionPolicy);
-            result.postInvokeFunction = (postInvokeFunction == null ? other.postInvokeFunction : postInvokeFunction);
-            result.preInvokeFunction = (preInvokeFunction == null ? other.preInvokeFunction : preInvokeFunction);
-            result.scriptExtension = (scriptExtension == null ? other.scriptExtension : scriptExtension);
-            result.scriptLocation = (scriptLocation == null ? other.scriptLocation : scriptLocation);
+            result.postInvokeFunction = (postInvokeFunction == null || preInvokeFunction.length()==0 ? other.postInvokeFunction : postInvokeFunction);
+            result.preInvokeFunction = (preInvokeFunction == null || preInvokeFunction.length()==0 ? other.preInvokeFunction : preInvokeFunction);
+            result.scriptExtension = (scriptExtension == null || scriptExtension.length()==0 ? other.scriptExtension : scriptExtension);
+            result.scriptLocation = (scriptLocation == null || scriptLocation.length()==0 ? other.scriptLocation : scriptLocation);
             result.scriptLocationType=(scriptLocationType == null ? other.scriptLocationType : scriptLocationType);
            
             return result;

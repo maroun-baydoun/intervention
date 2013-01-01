@@ -1,18 +1,19 @@
-/**Copyright 2012 Maroun Baydoun
-
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
-**/
-
+/**
+ * Copyright 2012 Maroun Baydoun
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+*
+ */
 package com.mb.intervention.context;
 
 import com.impetus.annovention.ClasspathDiscoverer;
@@ -34,7 +35,6 @@ public class AnnotationContextProvider extends ContextProvider {
         methodAnnotationDiscoveryListener = new MethodAnnotationScannerListener();
     }
 
-  
     @Override
     public void build() {
 
@@ -58,23 +58,15 @@ public class AnnotationContextProvider extends ContextProvider {
 
                     Class dynamicClass = Class.forName(className);
                     Dynamic dynamicAnnotation = (Dynamic) dynamicClass.getAnnotation(Dynamic.class);
-                    String dynamicClassKey = dynamicAnnotation.id().length() > 0 ? dynamicAnnotation.id() : className;
-                    String script = dynamicAnnotation.script().length() > 0 ? dynamicAnnotation.script() : className;
 
 
-                    if (!context.containsContextEntry(dynamicClassKey)) {
+                    Context.ContextEntry contextEntry = new Context.ContextEntry();
+                    contextEntry.setDynamicClass(dynamicClass);
+                    contextEntry.setDynamicClassId(dynamicAnnotation.id());
+                    contextEntry.setInterceptionPolicy(dynamicAnnotation.interceptionPolicy());
+                    contextEntry.setScript(dynamicAnnotation.script());
 
-                        Context.ContextEntry contextEntry = new Context.ContextEntry();
-                        contextEntry.setDynamicClass(dynamicClass);
-                        contextEntry.setDynamicClassId(dynamicClassKey);
-                        contextEntry.setInterceptionPolicy(dynamicAnnotation.interceptionPolicy());
-                        contextEntry.setScript(script);
-
-                        context.addContextEntry(contextEntry);
-
-                    } else {
-                        LocalizedLogger.severe(className, "dynamic_class_id_already_registered", dynamicClassKey);
-                    }
+                    contextEntryDiscovered(contextEntry);
 
                 } catch (ClassNotFoundException ex) {
                     LocalizedLogger.severe(className, "exception_occurred", ex);
@@ -90,17 +82,17 @@ public class AnnotationContextProvider extends ContextProvider {
                         Configuration configurationAnnotation = (Configuration) classWithConfiguration.getAnnotation(Configuration.class);
 
                         Context.Configuration configuration = new Context.Configuration();
-                        configuration.setDefaultScript(configurationAnnotation.defaultScript().length()==0?null:configurationAnnotation.defaultScript());
-                        configuration.setDynamicLanguage(configurationAnnotation.dynamicLanguage().length()==0?null:configurationAnnotation.dynamicLanguage());
-                        configuration.setScriptExtension(configurationAnnotation.scriptExtension().length()==0?null:configurationAnnotation.scriptExtension());
-                        configuration.setPostInvokeFunction(configurationAnnotation.postInvokeFunction().length()==0?null:configurationAnnotation.postInvokeFunction());
-                        configuration.setPreInvokeFunction(configurationAnnotation.preInvokeFunction().length()==0?null:configurationAnnotation.preInvokeFunction());
+
+                        configuration.setDefaultScript(configurationAnnotation.defaultScript());
+                        configuration.setDynamicLanguage(configurationAnnotation.dynamicLanguage());
+                        configuration.setScriptExtension(configurationAnnotation.scriptExtension());
+                        configuration.setPostInvokeFunction(configurationAnnotation.postInvokeFunction());
+                        configuration.setPreInvokeFunction(configurationAnnotation.preInvokeFunction());
                         configuration.setInterceptionPolicy(configurationAnnotation.interceptionPolicy());
-                        configuration.setScriptLocation(configurationAnnotation.scriptLocation().length()==0?null:configurationAnnotation.scriptLocation());
-                        
-                        configuration=configuration.merge(Context.Configuration.getDefault());
-                        
-                        context.setConfiguration(configuration);
+                        configuration.setScriptLocation(configurationAnnotation.scriptLocation());
+
+                        configurationDiscovered(configuration);
+
                     } else {
                         LocalizedLogger.warn(className, "configuration_already_defined");
                     }
