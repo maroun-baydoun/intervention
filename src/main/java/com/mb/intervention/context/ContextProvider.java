@@ -57,6 +57,11 @@ public abstract class ContextProvider {
         }
     }
 
+    protected void contextEntryExcludedMethodDiscovered(Class<?> dynamicClass,String methodName){
+        
+        context.addExcludedMethod(dynamicClass, methodName);
+    }
+    
     protected void configurationDiscovered(Context.Configuration configuration) {
 
         configuration = configuration.merge(Context.Configuration.getDefault());

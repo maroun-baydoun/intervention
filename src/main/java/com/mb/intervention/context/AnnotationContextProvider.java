@@ -115,10 +115,10 @@ public class AnnotationContextProvider extends ContextProvider {
 
         public void discovered(String className, String methodName, String annotationName) {
             try {
-                Class dynamicClass = Class.forName(className);
+               Class dynamicClass = Class.forName(className);
 
-                context.addExcludedMethod(dynamicClass, methodName);
-
+               contextEntryExcludedMethodDiscovered(dynamicClass, methodName);
+                
             } catch (ClassNotFoundException ex) {
                 LocalizedLogger.severe(className, "exception_occurred", ex);
             }
