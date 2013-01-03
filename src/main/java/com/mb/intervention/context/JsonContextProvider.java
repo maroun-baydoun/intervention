@@ -157,8 +157,10 @@ public class JsonContextProvider extends ContextProvider {
 
                     List<String> excludedMethodsList = (List<String>) dynamicMap.get(DYNAMIC_EXCLUDE_PROP);
 
-                    for (String excludedMethod : excludedMethodsList) {
-                        contextEntryExcludedMethodDiscovered(contextEntry.getDynamicClass(), excludedMethod);
+                    if(excludedMethodsList!=null){
+                        for (String excludedMethod : excludedMethodsList) {
+                            contextEntryExcludedMethodDiscovered(contextEntry.getDynamicClass(), excludedMethod);
+                        }
                     }
 
                 } catch (ClassCastException ex) {
