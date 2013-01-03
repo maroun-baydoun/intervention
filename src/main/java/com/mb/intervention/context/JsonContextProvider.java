@@ -24,8 +24,8 @@ import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
 public class JsonContextProvider extends ContextProvider {
 
@@ -36,6 +36,7 @@ public class JsonContextProvider extends ContextProvider {
     private static final String DYNAMIC_ID_PROP = "id";
     private static final String DYNAMIC_SCRIPT_PROP = "script";
     private static final String DYNAMIC_INTERCEPTION_POLICY_PROP = "interceptionPolicy";
+    private static final String DYNAMIC_EXCLUDE_PROP = "exclude";
 
     public JsonContextProvider(String jsonFile) {
         this.jsonFile = jsonFile;
@@ -89,7 +90,7 @@ public class JsonContextProvider extends ContextProvider {
 
     }
 
-    private static Context.Configuration buildConfigurationFromMap(Map<String, String> configurationMap) {
+    private Context.Configuration buildConfigurationFromMap(Map<String, String> configurationMap) {
 
         Context.Configuration configuration = new Context.Configuration();
 
@@ -116,7 +117,7 @@ public class JsonContextProvider extends ContextProvider {
         return configuration;
     }
 
-    private static Context.ContextEntry buildContextEntryFromMap(Map<String, Object> dynamicMap, Context context) {
+    private Context.ContextEntry buildContextEntryFromMap(Map<String, Object> dynamicMap, Context context) {
 
         Context.ContextEntry contextEntry = null;
 
@@ -151,11 +152,27 @@ public class JsonContextProvider extends ContextProvider {
                     }
                 }
 
+
+                try {
+
+                    List<String> excludedMethodsList = (List<String>) dynamicMap.get(DYNAMIC_EXCLUDE_PROP);
+
+                    for (String excludedMethod : excludedMethodsList) {
+                        contextEntryExcludedMethodDiscovered(contextEntry.getDynamicClass(), excludedMethod);
+                    }
+
+                } catch (ClassCastException ex) {
+                    
+                    LocalizedLogger.warn(JsonContextProvider.class.getName(), "context_property_array", DYNAMIC_EXCLUDE_PROP);
+                }
+
             }
         } else {
 
-            LocalizedLogger.severe(JsonContextProvider.class.getName(), "context_property_required","class");
+            LocalizedLogger.severe(JsonContextProvider.class.getName(), "context_property_required", "class");
         }
+
+
 
 
 
