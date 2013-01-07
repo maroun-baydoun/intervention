@@ -29,7 +29,5 @@ public @interface Dynamic {
 
     public String id() default "";
     public String script() default "";
-    public String preInvokeFunction() default "";
-    public String postInvokeFunction() default "";
     public InterceptionPolicy interceptionPolicy() default InterceptionPolicy.UNSPECIFIED;
 }
