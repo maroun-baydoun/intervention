@@ -45,7 +45,7 @@ public abstract class ContextProvider {
 
         if (!context.containsContextEntry(dynamicClassKey)) {
 
-            String script = contextEntry.getScript().length() > 0 ? contextEntry.getScript() : contextEntry.getDynamicClass().getName();
+            String script = (contextEntry.getScript()!=null && contextEntry.getScript().length() > 0) ? contextEntry.getScript() : (contextEntry.getDynamicClassId()!=null && contextEntry.getDynamicClassId().length()>0)?contextEntry.getDynamicClassId(): contextEntry.getDynamicClass().getName();
 
             contextEntry.setDynamicClassId(dynamicClassKey);
             contextEntry.setScript(script);
