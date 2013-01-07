@@ -23,7 +23,22 @@
   <packaging>jar</packaging>
 
   <name>intervention</name>
-  <url>http://maven.apache.org</url>
+  <url>http://github.com/maroun-baydoun/intervention</url>
+  <description>Intercept your Java calls with dynamic JVM languages.</description>
+
+    <inceptionYear>2012</inceptionYear>
+    <organization>
+        <name>Maroun Baydoun</name>
+        <url>http://marounbaydoun.com</url>
+    </organization>
+
+    <licenses>
+        <license>
+            <name>Apache License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
