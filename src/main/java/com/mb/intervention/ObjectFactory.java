@@ -21,6 +21,11 @@ import com.mb.intervention.context.ContextProvider;
 import com.mb.intervention.context.InterceptionPolicy;
 import com.mb.intervention.context.JsonContextProvider;
 import com.mb.intervention.log.LocalizedLogger;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
@@ -52,29 +57,53 @@ public final class ObjectFactory {
      */
     public static void build() {
 
+        build(new AnnotationContextProvider());
+
+    }
+    
+     public static void build(ContextProvider contextProvider) {
+
         if (instance == null) {
             instance = new ObjectFactory();
-            instance.contextProvider = new AnnotationContextProvider();
+            instance.contextProvider = contextProvider;
+            
+            instance.contextProvider.build();
+            instance.context = instance.contextProvider.getContext();
         }
 
-        instance.contextProvider.build();
-        instance.context = instance.contextProvider.getContext();
     }
 
     /**
      *
      * @param configurationFile
      */
-    public static void build(String configurationFile) {
-
-        if (instance == null) {
-            instance = new ObjectFactory();
-            instance.contextProvider=new JsonContextProvider(configurationFile);
+    public static void build(String contextFile) {
+        try {
+            
+            FileReader contextFileReader=new FileReader(contextFile);
+            build(new JsonContextProvider(contextFileReader));
+            
+        } catch (FileNotFoundException ex) {
+           
         }
-        
-        build();
     }
 
+     public static void build(InputStream contextInputStream) {
+         
+         if(contextInputStream!=null){
+            InputStreamReader contextInputStreamReader=new InputStreamReader(contextInputStream);
+            build(new JsonContextProvider(contextInputStreamReader));
+         }
+         else{
+             
+         }
+    }
+     
+     public static void build(Reader contextReader) {
+
+       build(new JsonContextProvider(contextReader));
+    }
+    
     /**
      *
      * @return

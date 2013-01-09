@@ -15,14 +15,42 @@
 
 package com.mb.intervention.context;
 
+/**
+ * Represents the different policies for determining which Java methods will be intercepted by the dynamic script.
+ * 
+ * @author Maroun Baydoun <maroun.baydoun@gmail.com>
+ */
 
 public enum InterceptionPolicy {
  
+    /**
+     * All methods will be intercepted.
+     */
     ALL,
+    
+    /**
+     * No methods will be intercepted.
+     */
     NONE,
+    
+    /**
+     * Only getter methods will be intercepted.
+     */
     GETTERS,
+    
+    /**
+     * Only setter methods will be intercepted
+     */
     SETTERS,
+    
+    /**
+     * Only getter and setter methods will be intercepted
+     */
     GETTERS_SETTERS,
+    
+    /**
+     * No policy is specified.
+     */
     UNSPECIFIED;
 
     

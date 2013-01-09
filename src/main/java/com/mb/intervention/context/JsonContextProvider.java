@@ -20,16 +20,14 @@ import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 import com.mb.intervention.log.LocalizedLogger;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class JsonContextProvider extends ContextProvider {
 
-    private String jsonFile;
+    private Reader jsonContextReader;
     private static final String CONFIG_PROP = "config";
     private static final String DYNAMIC_PROP = "dynamic";
     private static final String DYNAMIC_CLASS_PROP = "class";
@@ -38,48 +36,41 @@ public class JsonContextProvider extends ContextProvider {
     private static final String DYNAMIC_INTERCEPTION_POLICY_PROP = "interceptionPolicy";
     private static final String DYNAMIC_EXCLUDE_PROP = "exclude";
 
-    public JsonContextProvider(String jsonFile) {
-        this.jsonFile = jsonFile;
+
+    public JsonContextProvider(Reader jsonReader) {
+        this.jsonContextReader = jsonReader;
     }
 
     @Override
     public void build() {
+        
         try {
-            InputStream jsonInputStream = JsonContextProvider.class.getResourceAsStream(jsonFile);
 
-            if (jsonInputStream != null) {
+            Gson gson = new Gson();
+            Map<String, Object> contextMap = gson.fromJson(jsonContextReader, Map.class);
 
-                InputStreamReader jsonInputStreamReader = new InputStreamReader(jsonInputStream);
-                BufferedReader jsonBufferedReader = new BufferedReader(jsonInputStreamReader);
+            Map<String, String> configurationMap = (Map<String, String>) contextMap.get(CONFIG_PROP);
 
-                Gson gson = new Gson();
-                Map<String, Object> contextMap = gson.fromJson(jsonBufferedReader, Map.class);
+            if (configurationMap != null) {
 
-                Map<String, String> configurationMap = (Map<String, String>) contextMap.get(CONFIG_PROP);
+                Context.Configuration configuration = buildConfigurationFromMap(configurationMap);
 
-                if (configurationMap != null) {
+                configurationDiscovered(configuration);
+            }
 
-                    Context.Configuration configuration = buildConfigurationFromMap(configurationMap);
+            ArrayList<Map<String, Object>> dynamicList = (ArrayList<Map<String, Object>>) contextMap.get(DYNAMIC_PROP);
 
-                    configurationDiscovered(configuration);
-                }
+            if (dynamicList != null) {
+                for (Map<String, Object> dynamicMap : dynamicList) {
+                    Context.ContextEntry contextEntry = buildContextEntryFromMap(dynamicMap, context);
 
-                ArrayList<Map<String, Object>> dynamicList = (ArrayList<Map<String, Object>>) contextMap.get(DYNAMIC_PROP);
+                    if (contextEntry != null) {
 
-                if (dynamicList != null) {
-                    for (Map<String, Object> dynamicMap : dynamicList) {
-                        Context.ContextEntry contextEntry = buildContextEntryFromMap(dynamicMap, context);
-
-                        if (contextEntry != null) {
-
-                            contextEntryDiscovered(contextEntry);
-                        }
+                        contextEntryDiscovered(contextEntry);
                     }
                 }
-
-
-
             }
+
         } catch (JsonSyntaxException ex) {
 
             LocalizedLogger.severe(JsonContextProvider.class.getName(), "context_error", ex.getMessage());
@@ -157,14 +148,14 @@ public class JsonContextProvider extends ContextProvider {
 
                     List<String> excludedMethodsList = (List<String>) dynamicMap.get(DYNAMIC_EXCLUDE_PROP);
 
-                    if(excludedMethodsList!=null){
+                    if (excludedMethodsList != null) {
                         for (String excludedMethod : excludedMethodsList) {
                             contextEntryExcludedMethodDiscovered(contextEntry.getDynamicClass(), excludedMethod);
                         }
                     }
 
                 } catch (ClassCastException ex) {
-                    
+
                     LocalizedLogger.warn(JsonContextProvider.class.getName(), "context_property_array", DYNAMIC_EXCLUDE_PROP);
                 }
 
