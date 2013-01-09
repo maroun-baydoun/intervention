@@ -20,6 +20,7 @@ import com.mb.intervention.context.Context;
 import com.mb.intervention.context.ContextProvider;
 import com.mb.intervention.context.InterceptionPolicy;
 import com.mb.intervention.context.JsonContextProvider;
+import com.mb.intervention.exceptions.InterventionException;
 import com.mb.intervention.log.LocalizedLogger;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -53,7 +54,7 @@ public final class ObjectFactory {
     
 
     /**
-     *
+     *Builds an ObjectFactory with an {@link AnnotationContextProvider}
      */
     public static void build() {
 
@@ -61,6 +62,11 @@ public final class ObjectFactory {
 
     }
     
+    /**
+     * Builds an ObjectFactory with the specified {@link ContextProvider}
+     * 
+     * @param contextProvider 
+     */
      public static void build(ContextProvider contextProvider) {
 
         if (instance == null) {
@@ -74,10 +80,11 @@ public final class ObjectFactory {
     }
 
     /**
-     *
-     * @param configurationFile
+     *Builds an ObjectFactory with the specified context file
+     * 
+     * @param contextFile The path of the context file
      */
-    public static void build(String contextFile) {
+    public static void build(String contextFile) throws InterventionException {
         try {
             
             FileReader contextFileReader=new FileReader(contextFile);
@@ -85,6 +92,7 @@ public final class ObjectFactory {
             
         } catch (FileNotFoundException ex) {
            
+            throw  new InterventionException("context_file_not_found",ex,contextFile);
         }
     }
 
@@ -161,7 +169,8 @@ public final class ObjectFactory {
                 LocalizedLogger.severe(getClass().getName(), "exception_occurred", ex);
             }
         } else {
-            LocalizedLogger.severe(getClass().getName(), "dynamic_class_not_registered", dynamicClassKey);
+            throw new InterventionException("dynamic_class_not_registered", dynamicClassKey);
+            
         }
 
         return createdObject;
