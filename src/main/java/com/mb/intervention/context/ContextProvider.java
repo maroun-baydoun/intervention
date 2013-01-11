@@ -57,10 +57,10 @@ public abstract class ContextProvider {
         }
     }
 
-    protected void contextEntryExcludedMethodDiscovered(Class<?> dynamicClass,String methodName){
+    /*protected void contextEntryExcludedMethodDiscovered(Class<?> dynamicClass,String methodName){
         
         context.addExcludedMethod(dynamicClass, methodName);
-    }
+    }*/
     
     protected void configurationDiscovered(Context.Configuration configuration) {
 

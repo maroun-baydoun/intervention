@@ -19,6 +19,7 @@ package com.mb.intervention.context;
 import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
+import com.mb.intervention.exceptions.InterventionException;
 import com.mb.intervention.log.LocalizedLogger;
 import java.io.Reader;
 import java.util.ArrayList;
@@ -42,9 +43,9 @@ public class JsonContextProvider extends ContextProvider {
     }
 
     @Override
-    public void build() {
+    public void build() throws InterventionException{
         
-        try {
+        try {           
 
             Gson gson = new Gson();
             Map<String, Object> contextMap = gson.fromJson(jsonContextReader, Map.class);
@@ -73,10 +74,10 @@ public class JsonContextProvider extends ContextProvider {
 
         } catch (JsonSyntaxException ex) {
 
-            LocalizedLogger.severe(JsonContextProvider.class.getName(), "context_error", ex.getMessage());
+            throw new InterventionException("context_error", ex, ex.getLocalizedMessage());
 
         } catch (JsonIOException ex) {
-            LocalizedLogger.severe(JsonContextProvider.class.getName(), "exception_occurred", ex.getMessage());
+            throw new InterventionException("exception_occurred", ex, ex.getLocalizedMessage());
         }
 
     }
@@ -99,9 +100,11 @@ public class JsonContextProvider extends ContextProvider {
             try {
 
                 configuration.setInterceptionPolicy(InterceptionPolicy.valueOf(configurationInterceptionPolicy));
+           
             } catch (IllegalArgumentException ex) {
 
-                LocalizedLogger.severe(JsonContextProvider.class.getName(), "context_error", ex.getMessage());
+                throw new InterventionException("context_error", ex, ex.getLocalizedMessage());
+                
             }
         }
 
@@ -121,7 +124,9 @@ public class JsonContextProvider extends ContextProvider {
                 contextEntry.setDynamicClass(dynamiClass);
 
             } catch (ClassNotFoundException ex) {
-                LocalizedLogger.severe(JsonContextProvider.class.getName(), "class_not_found", dynamicClassName);
+                
+                throw new InterventionException("class_not_found", ex, dynamicClassName);
+                
             }
 
             if (contextEntry != null) {
@@ -137,9 +142,10 @@ public class JsonContextProvider extends ContextProvider {
                     try {
 
                         contextEntry.setInterceptionPolicy(InterceptionPolicy.valueOf(configurationInterceptionPolicy));
+                    
                     } catch (IllegalArgumentException ex) {
 
-                        LocalizedLogger.severe(JsonContextProvider.class.getName(), "context_error", ex.getMessage());
+                        throw new InterventionException("context_error", ex,ex.getLocalizedMessage());
                     }
                 }
 
@@ -149,14 +155,13 @@ public class JsonContextProvider extends ContextProvider {
                     List<String> excludedMethodsList = (List<String>) dynamicMap.get(DYNAMIC_EXCLUDE_PROP);
 
                     if (excludedMethodsList != null) {
-                        for (String excludedMethod : excludedMethodsList) {
-                            contextEntryExcludedMethodDiscovered(contextEntry.getDynamicClass(), excludedMethod);
+                        for (String method : excludedMethodsList) {
+                            contextEntry.addExcludedMethod(method);
                         }
                     }
 
                 } catch (ClassCastException ex) {
-
-                    LocalizedLogger.warn(JsonContextProvider.class.getName(), "context_property_array", DYNAMIC_EXCLUDE_PROP);
+                    throw new InterventionException("context_property_array", ex,DYNAMIC_EXCLUDE_PROP);
                 }
 
             }
@@ -164,11 +169,6 @@ public class JsonContextProvider extends ContextProvider {
 
             LocalizedLogger.severe(JsonContextProvider.class.getName(), "context_property_required", "class");
         }
-
-
-
-
-
 
         return contextEntry;
     }

@@ -99,11 +99,12 @@ public final class ObjectFactory {
      public static void build(InputStream contextInputStream) {
          
          if(contextInputStream!=null){
+             
             InputStreamReader contextInputStreamReader=new InputStreamReader(contextInputStream);
             build(new JsonContextProvider(contextInputStreamReader));
          }
          else{
-             
+             throw new InterventionException("context_inputstream_null");
          }
     }
      
@@ -148,7 +149,7 @@ public final class ObjectFactory {
             MethodFilter methodFilter = methodFilters.get(dynamicClassKey);
 
             if (methodFilter == null) {
-                methodFilter = new ProxyMethodFilter(contextEntry, context.getExcludedMethodsForClass(dynamicClass));
+                methodFilter = new ProxyMethodFilter(contextEntry);
                 methodFilters.put(dynamicClassKey, methodFilter);
             }
 
@@ -181,12 +182,10 @@ public final class ObjectFactory {
         private static final InterceptionPolicy GLOBAL_INTERCEPTION_POLICY = ObjectFactory.instance.context.getConfiguration().getInterceptionPolicy();
        
         private Context.ContextEntry contextEntry;
-        private List<String> excludedMethods;
-
-        public ProxyMethodFilter(Context.ContextEntry contextEntry, List<String> excludedMethods) {
+        
+        public ProxyMethodFilter(Context.ContextEntry contextEntry) {
 
             this.contextEntry = contextEntry;
-            this.excludedMethods = excludedMethods;
         }
 
         @Override
@@ -194,7 +193,7 @@ public final class ObjectFactory {
 
             String methodName = method.getName();
 
-            if (excludedMethods != null && excludedMethods.contains(methodName)) {
+            if (contextEntry.getExcludedMethods() != null && contextEntry.getExcludedMethods().contains(methodName)) {
                 return false;
             }
 

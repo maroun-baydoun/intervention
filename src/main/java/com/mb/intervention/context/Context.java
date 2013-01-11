@@ -28,14 +28,12 @@ public class Context{
 
     private Configuration configuration;
     private Map<String, ContextEntry> contextEntires;
-    private Map<Class<?>, List<String>> excludedMethods;
+    
 
     public Context() {
 
         contextEntires = new HashMap<String, ContextEntry>();
-        excludedMethods = new HashMap<Class<?>, List<String>>();
         
-
     }
 
     public void addContextEntry(ContextEntry entry) {
@@ -55,26 +53,7 @@ public class Context{
         return contextEntires.containsKey(dynamicClassId);
     }
 
-    public void addExcludedMethod(Class<?> dynamicClass, String methodName) {
-
-       
-        List<String> classExcludedMethods = excludedMethods.get(dynamicClass);
-
-        if (classExcludedMethods == null) {
-            classExcludedMethods = new ArrayList<String>();
-            classExcludedMethods.add(methodName);
-            excludedMethods.put(dynamicClass, classExcludedMethods);
-        } else {
-            classExcludedMethods.add(methodName);
-        }
-
-    }
-
-    public List<String> getExcludedMethodsForClass(Class<?> dynamicClass) {
-
-        return excludedMethods.get(dynamicClass);
-    }
-
+    
     public void setConfiguration(Configuration configuration) {
         this.configuration = configuration;
     }
@@ -89,6 +68,7 @@ public class Context{
         private Class<?> dynamicClass;
         private InterceptionPolicy interceptionPolicy;
         private String script;
+        private List<String> excludedMethods;
 
         public ContextEntry() {
         }
@@ -109,6 +89,12 @@ public class Context{
             return script;
         }
 
+        public List<String> getExcludedMethods() {
+            return excludedMethods;
+        }
+        
+        
+
         public void setDynamicClass(Class<?> dynamicClass) {
             this.dynamicClass = dynamicClass;
         }
@@ -123,6 +109,15 @@ public class Context{
 
         public void setScript(String script) {
             this.script = script;
+        }
+        
+        public void addExcludedMethod(String methodName) {
+            if(excludedMethods==null){
+                excludedMethods=new ArrayList<String>();
+            }
+            
+            excludedMethods.add(methodName);
+
         }
     }
 

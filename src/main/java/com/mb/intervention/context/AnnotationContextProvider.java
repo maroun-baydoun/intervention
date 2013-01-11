@@ -18,21 +18,21 @@ package com.mb.intervention.context;
 
 import com.impetus.annovention.ClasspathDiscoverer;
 import com.impetus.annovention.listener.ClassAnnotationDiscoveryListener;
-import com.impetus.annovention.listener.MethodAnnotationDiscoveryListener;
 import com.mb.intervention.annotations.Configuration;
 import com.mb.intervention.annotations.Dynamic;
 import com.mb.intervention.annotations.Exclude;
 import com.mb.intervention.log.LocalizedLogger;
+import java.lang.reflect.Method;
 
 public class AnnotationContextProvider extends ContextProvider {
 
     private ClassAnnotationScannerListener classAnnotationDiscoveryListener;
-    private MethodAnnotationDiscoveryListener methodAnnotationDiscoveryListener;
+    
 
     public AnnotationContextProvider() {
 
         classAnnotationDiscoveryListener = new ClassAnnotationScannerListener();
-        methodAnnotationDiscoveryListener = new MethodAnnotationScannerListener();
+        
     }
 
     @Override
@@ -40,7 +40,6 @@ public class AnnotationContextProvider extends ContextProvider {
 
         ClasspathDiscoverer discoverer = new ClasspathDiscoverer();
         discoverer.addAnnotationListener(classAnnotationDiscoveryListener);
-        discoverer.addAnnotationListener(methodAnnotationDiscoveryListener);
         discoverer.discover(true, false, true, true, false);
 
 
@@ -65,6 +64,15 @@ public class AnnotationContextProvider extends ContextProvider {
                     contextEntry.setDynamicClassId(dynamicAnnotation.id());
                     contextEntry.setInterceptionPolicy(dynamicAnnotation.interceptionPolicy());
                     contextEntry.setScript(dynamicAnnotation.script());
+                    
+                    Method[] dynamicClassMethods=dynamicClass.getMethods();
+                    
+                    for (Method method : dynamicClassMethods) {
+                        
+                        if(method.isAnnotationPresent(Exclude.class)){
+                            contextEntry.addExcludedMethod(method.getName());
+                        }
+                    }
 
                     contextEntryDiscovered(contextEntry);
 
@@ -111,21 +119,5 @@ public class AnnotationContextProvider extends ContextProvider {
         }
     }
 
-    private final class MethodAnnotationScannerListener implements MethodAnnotationDiscoveryListener {
-
-        public void discovered(String className, String methodName, String annotationName) {
-            try {
-               Class dynamicClass = Class.forName(className);
-
-               contextEntryExcludedMethodDiscovered(dynamicClass, methodName);
-                
-            } catch (ClassNotFoundException ex) {
-                LocalizedLogger.severe(className, "exception_occurred", ex);
-            }
-        }
-
-        public String[] supportedAnnotations() {
-            return new String[]{Exclude.class.getName()};
-        }
-    }
+  
 }
