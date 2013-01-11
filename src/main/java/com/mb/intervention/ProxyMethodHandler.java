@@ -27,7 +27,8 @@ public class ProxyMethodHandler implements MethodHandler {
     
     private static final String PRE_INVOKE_FUNCTION=ObjectFactory.getInstance().getContext().getConfiguration().getPreInvokeFunction();
     private static final String POST_INVOKE_FUNCTION=ObjectFactory.getInstance().getContext().getConfiguration().getPostInvokeFunction();
-
+    private static final String DEFAULT_SCRIPT=ObjectFactory.getInstance().getContext().getConfiguration().getDefaultScript();
+    
     /**
      *
      * @param contextEntry
@@ -58,8 +59,8 @@ public class ProxyMethodHandler implements MethodHandler {
         DynamicScriptEngine dynamicScriptEngine = DynamicScriptEngine.getInstance();
         DynamicScriptEngine defaultScriptEngine = DynamicScriptEngine.getDefaultInstance();
 
-
-        boolean defaultScriptPresent = defaultScriptEngine.evalScript("default");
+        
+        boolean defaultScriptPresent = defaultScriptEngine.evalScript(DEFAULT_SCRIPT);
 
         if (defaultScriptPresent) {
  
