@@ -123,6 +123,8 @@ public class Context{
 
     public static class Configuration {
 
+        private static final String DEFAULT_CONFIG_FILE="../defaults.properties";
+        
         private String defaultScript;
         private String dynamicLanguage;
         private String scriptExtension;
@@ -137,6 +139,11 @@ public class Context{
         public static final String SCRIPT_LOCATION_FOLDER="folder";
         public static final String SCRIPT_LOCATION_DELIMITER=":";
 
+        /**
+         * Reads and returns the default configuration stored in the default configuration file
+         * 
+         * @return the default configuration.
+         */
         public static Configuration getDefault() {
 
 
@@ -144,7 +151,7 @@ public class Context{
 
                 try {
                     Properties properties = new Properties();
-                    properties.load(AnnotationContextProvider.class.getResourceAsStream("../defaults.properties"));
+                    properties.load(AnnotationContextProvider.class.getResourceAsStream(DEFAULT_CONFIG_FILE));
 
                     defaultConfiguration = new Configuration();
                     defaultConfiguration.setDefaultScript(properties.getProperty("defaultScript"));
@@ -241,7 +248,7 @@ public class Context{
         public void setScriptLocation(String scriptLocation) {
             this.scriptLocation = scriptLocation;
             
-            if(scriptLocation!=null){
+            if(scriptLocation!=null && scriptLocation.contains(SCRIPT_LOCATION_DELIMITER)){
                 this.scriptLocationType=scriptLocation.substring(0,scriptLocation.indexOf(SCRIPT_LOCATION_DELIMITER));
                 this.scriptLocation=scriptLocation.substring(scriptLocationType.length()+Context.Configuration.SCRIPT_LOCATION_DELIMITER.length());
             }
