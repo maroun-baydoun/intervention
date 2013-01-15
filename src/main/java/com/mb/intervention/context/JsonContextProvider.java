@@ -20,7 +20,6 @@ import com.google.gson.Gson;
 import com.google.gson.JsonIOException;
 import com.google.gson.JsonSyntaxException;
 import com.mb.intervention.exceptions.InterventionException;
-import com.mb.intervention.log.LocalizedLogger;
 import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
@@ -63,7 +62,7 @@ public class JsonContextProvider extends ContextProvider {
 
             if (dynamicList != null) {
                 for (Map<String, Object> dynamicMap : dynamicList) {
-                    Context.ContextEntry contextEntry = buildContextEntryFromMap(dynamicMap, context);
+                    Context.ContextEntry contextEntry = buildContextEntryFromMap(dynamicMap);
 
                     if (contextEntry != null) {
 
@@ -111,7 +110,7 @@ public class JsonContextProvider extends ContextProvider {
         return configuration;
     }
 
-    private Context.ContextEntry buildContextEntryFromMap(Map<String, Object> dynamicMap, Context context) {
+    private Context.ContextEntry buildContextEntryFromMap(Map<String, Object> dynamicMap) throws InterventionException{
 
         Context.ContextEntry contextEntry = null;
 
@@ -166,8 +165,7 @@ public class JsonContextProvider extends ContextProvider {
 
             }
         } else {
-
-            LocalizedLogger.severe(JsonContextProvider.class.getName(), "context_property_required", "class");
+            throw new InterventionException("context_property_required","class");
         }
 
         return contextEntry;

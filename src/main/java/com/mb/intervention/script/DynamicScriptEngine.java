@@ -19,7 +19,6 @@ package com.mb.intervention.script;
 import com.mb.intervention.ObjectFactory;
 import com.mb.intervention.context.Context;
 import com.mb.intervention.exceptions.InterventionException;
-import com.mb.intervention.log.LocalizedLogger;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
@@ -33,7 +32,6 @@ public class DynamicScriptEngine {
 
     private static final String DYNAMIC_LANGUAGE = ObjectFactory.getInstance().getContext().getConfiguration().getDynamicLanguage();
     private static final String SCRIPT_EXTENSION = ObjectFactory.getInstance().getContext().getConfiguration().getScriptExtension();
-    private static final String DEFAULT_SCRIPT = ObjectFactory.getInstance().getContext().getConfiguration().getDefaultScript();
     private static final String SCRIPT_LOCATION = ObjectFactory.getInstance().getContext().getConfiguration().getScriptLocation();
     private static final String SCRIPT_LOCATION_TYPE = ObjectFactory.getInstance().getContext().getConfiguration().getScriptLocationType();
     private static DynamicScriptEngine instance;
@@ -42,6 +40,7 @@ public class DynamicScriptEngine {
     private Invocable invocableEngine;
     private Compilable compilableEngine;
     private Map<String, CompiledScript> compiledScripts;
+    private String currentScriptName;
 
     private DynamicScriptEngine(String language) {
 
@@ -123,6 +122,7 @@ public class DynamicScriptEngine {
             if (script != null) {
 
                 script.eval();
+                this.currentScriptName=scriptName;
 
                 scriptOk = true;
 
@@ -136,16 +136,16 @@ public class DynamicScriptEngine {
 
     }
 
-    public Object invoke(String functionName, Object... args) {
+    public Object invoke(String functionName, Object... args) throws ScriptException,NoSuchMethodException{
 
         Object functionReturn = null;
 
         try {
             functionReturn = invocableEngine.invokeFunction(functionName, args);
         } catch (ScriptException ex) {
-            LocalizedLogger.severe(DynamicScriptEngine.class.getName(), "script_exception_occurred", ex.getMessage(), "");
+            throw new InterventionException("script_exception_occurred",ex,this.currentScriptName,SCRIPT_EXTENSION,ex.getLineNumber());
         } catch (NoSuchMethodException ex) {
-            LocalizedLogger.severe(DynamicScriptEngine.class.getName(), "script_function_not_found", functionName);
+            throw new InterventionException("script_function_not_found",ex,functionName,this.currentScriptName,SCRIPT_EXTENSION);
         }
 
         return functionReturn;

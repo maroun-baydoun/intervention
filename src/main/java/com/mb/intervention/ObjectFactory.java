@@ -21,7 +21,7 @@ import com.mb.intervention.context.ContextProvider;
 import com.mb.intervention.context.InterceptionPolicy;
 import com.mb.intervention.context.JsonContextProvider;
 import com.mb.intervention.exceptions.InterventionException;
-import com.mb.intervention.log.LocalizedLogger;
+import com.mb.intervention.proxy.ProxyMethodHandler;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.InputStream;
@@ -29,7 +29,6 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import javassist.util.proxy.MethodFilter;
 import javassist.util.proxy.MethodHandler;
@@ -167,7 +166,7 @@ public final class ObjectFactory {
                 createdObject = proxyFactory.create(new Class[0], new Object[0], methodHandler);
 
             } catch (Exception ex) {
-                LocalizedLogger.severe(getClass().getName(), "exception_occurred", ex);
+                throw new InterventionException("exception_occurred", ex,ex.getMessage());
             }
         } else {
             throw new InterventionException("dynamic_class_not_registered", dynamicClassKey);

@@ -16,7 +16,7 @@
  */
 package com.mb.intervention.context;
 
-import com.mb.intervention.log.LocalizedLogger;
+import com.mb.intervention.exceptions.InterventionException;
 
 public abstract class ContextProvider {
 
@@ -27,7 +27,7 @@ public abstract class ContextProvider {
         context = new Context();
     }
 
-    public abstract void build();
+    public abstract void build() throws InterventionException;
 
     public Context getContext() {
 
@@ -38,7 +38,7 @@ public abstract class ContextProvider {
         return context;
     }
 
-    protected void contextEntryDiscovered(Context.ContextEntry contextEntry) {
+    protected void contextEntryDiscovered(Context.ContextEntry contextEntry) throws InterventionException {
 
         String dynamicClassKey = contextEntry.getDynamicClassId()!=null && contextEntry.getDynamicClassId().length() > 0 ? contextEntry.getDynamicClassId() : contextEntry.getDynamicClass().getName();
 
@@ -53,7 +53,7 @@ public abstract class ContextProvider {
             context.addContextEntry(contextEntry);
 
         } else {
-            LocalizedLogger.severe(ContextProvider.class.getName(), "dynamic_class_id_already_registered", dynamicClassKey);
+            throw new InterventionException("dynamic_class_id_already_registered",dynamicClassKey);
         }
     }
 

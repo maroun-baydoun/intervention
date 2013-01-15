@@ -21,7 +21,7 @@ import com.impetus.annovention.listener.ClassAnnotationDiscoveryListener;
 import com.mb.intervention.annotations.Configuration;
 import com.mb.intervention.annotations.Dynamic;
 import com.mb.intervention.annotations.Exclude;
-import com.mb.intervention.log.LocalizedLogger;
+import com.mb.intervention.exceptions.InterventionException;
 import java.lang.reflect.Method;
 
 public class AnnotationContextProvider extends ContextProvider {
@@ -36,7 +36,7 @@ public class AnnotationContextProvider extends ContextProvider {
     }
 
     @Override
-    public void build() {
+    public void build() throws InterventionException{
 
         ClasspathDiscoverer discoverer = new ClasspathDiscoverer();
         discoverer.addAnnotationListener(classAnnotationDiscoveryListener);
@@ -77,8 +77,7 @@ public class AnnotationContextProvider extends ContextProvider {
                     contextEntryDiscovered(contextEntry);
 
                 } catch (ClassNotFoundException ex) {
-                    LocalizedLogger.severe(className, "exception_occurred", ex);
-
+                    throw new InterventionException("class_not_found", ex, className);
                 }
             } else if (annotationName.equals(Configuration.class.getName())) {
 
@@ -102,12 +101,11 @@ public class AnnotationContextProvider extends ContextProvider {
                         configurationDiscovered(configuration);
 
                     } else {
-                        LocalizedLogger.warn(className, "configuration_already_defined");
+                        throw new InterventionException("configuration_already_defined");
                     }
 
                 } catch (ClassNotFoundException ex) {
-                    LocalizedLogger.severe(className, "exception_occurred", ex);
-
+                    throw new InterventionException("class_not_found", ex, className);
                 }
             }
 

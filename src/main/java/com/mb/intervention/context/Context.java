@@ -16,7 +16,7 @@
  */
 package com.mb.intervention.context;
 
-import com.mb.intervention.log.LocalizedLogger;
+import com.mb.intervention.exceptions.InterventionException;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -144,7 +144,7 @@ public class Context{
          * 
          * @return the default configuration.
          */
-        public static Configuration getDefault() {
+        public static Configuration getDefault() throws InterventionException{
 
 
             if (defaultConfiguration == null) {
@@ -163,7 +163,7 @@ public class Context{
                     defaultConfiguration.setScriptLocation(properties.getProperty("scriptLocation"));
                     
                 } catch (IOException ex) {
-                    LocalizedLogger.severe(Configuration.class.getName(), "exception_occurred", ex.getMessage());
+                    throw new InterventionException("exception_occurred",ex,ex.getLocalizedMessage());
                 }
             }
 

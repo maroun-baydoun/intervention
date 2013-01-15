@@ -14,8 +14,9 @@
  * the License.
 *
  */
-package com.mb.intervention;
+package com.mb.intervention.proxy;
 
+import com.mb.intervention.ObjectFactory;
 import com.mb.intervention.context.Context.ContextEntry;
 import com.mb.intervention.script.DynamicScriptEngine;
 import java.lang.reflect.Method;
@@ -90,4 +91,6 @@ public class ProxyMethodHandler implements MethodHandler {
 
         return invokeResult;
     }
+    
+   
 }
