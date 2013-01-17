@@ -54,8 +54,10 @@ public final class ObjectFactory {
 
     /**
      *Builds an ObjectFactory with an {@link AnnotationContextProvider}
+     * 
+     * @throws InterventionException
      */
-    public static void build() {
+    public static void build() throws InterventionException{
 
         build(new AnnotationContextProvider());
 
@@ -65,8 +67,9 @@ public final class ObjectFactory {
      * Builds an ObjectFactory with the specified {@link ContextProvider}
      * 
      * @param contextProvider 
+     * @throws InterventionException
      */
-     public static void build(ContextProvider contextProvider) {
+     public static void build(ContextProvider contextProvider) throws InterventionException {
 
         if (instance == null) {
             instance = new ObjectFactory();
@@ -82,6 +85,7 @@ public final class ObjectFactory {
      *Builds an ObjectFactory with the specified context file
      * 
      * @param contextFile The path of the context file
+     * @throws  InterventionException
      */
     public static void build(String contextFile) throws InterventionException {
         try {
@@ -95,7 +99,13 @@ public final class ObjectFactory {
         }
     }
 
-     public static void build(InputStream contextInputStream) {
+    /**
+     * Builds an ObjectFactory with the specified {@link InputStream}
+     * 
+     * @param contextInputStream The stream where the context can be read from
+     * @throws InterventionException
+     */
+     public static void build(InputStream contextInputStream) throws InterventionException{
          
          if(contextInputStream!=null){
              
@@ -107,33 +117,40 @@ public final class ObjectFactory {
          }
     }
      
-     public static void build(Reader contextReader) {
+     /**
+      * Builds an ObjectFactory with the specified {@link Reader}
+      * 
+      * @param contextReader The reader where the context can be read from
+      * @throws InterventionException 
+      */
+     public static void build(Reader contextReader) throws InterventionException{
 
        build(new JsonContextProvider(contextReader));
     }
     
     /**
-     *
-     * @return
+     *Returns the current instance of {@link ObjectFactory}
+     * @return the current instance of {@link ObjectFactory}
      */
     public static ObjectFactory getInstance() {
         return instance;
     }
 
     /**
-     *
-     * @return
+     *Returns the {@link Context} associated with this ObjectFactory
+     * @return the {@link Context} associated with this ObjectFactory
      */
     public Context getContext() {
         return context;
     }
 
     /**
-     *
+     *Creates and returns a new instance of a dynamic Java class
      * @param dynamicClassKey
+     * @throws  InterventionException
      * @return
      */
-    public Object create(String dynamicClassKey) {
+    public Object getObject(String dynamicClassKey) throws InterventionException{
 
         Object createdObject = null;
 
