@@ -67,6 +67,7 @@ public class Context{
         private String dynamicClassId;
         private Class<?> dynamicClass;
         private InterceptionPolicy interceptionPolicy;
+        private ScriptPolicy scriptPolicy;
         private String script;
         private List<String> excludedMethods;
 
@@ -85,6 +86,10 @@ public class Context{
             return interceptionPolicy;
         }
 
+        public ScriptPolicy getScriptPolicy() {
+            return scriptPolicy;
+        }
+        
         public String getScript() {
             return script;
         }
@@ -105,6 +110,10 @@ public class Context{
 
         public void setInterceptionPolicy(InterceptionPolicy interceptionPolicy) {
             this.interceptionPolicy = interceptionPolicy;
+        }
+
+        public void setScriptPolicy(ScriptPolicy scriptPolicy) {
+            this.scriptPolicy = scriptPolicy;
         }
 
         public void setScript(String script) {
@@ -133,6 +142,7 @@ public class Context{
         private String scriptLocation;
         private String scriptLocationType;
         private InterceptionPolicy interceptionPolicy;
+        private ScriptPolicy scriptPolicy;
         private static Configuration defaultConfiguration;
         
         public static final String SCRIPT_LOCATION_CLASSPATH="classpath";
@@ -160,6 +170,7 @@ public class Context{
                     defaultConfiguration.setPostInvokeFunction(properties.getProperty("postInvokeFunction"));
                     defaultConfiguration.setPreInvokeFunction(properties.getProperty("preInvokeFunction"));
                     defaultConfiguration.setInterceptionPolicy(InterceptionPolicy.valueOf(properties.getProperty("interceptionPolicy").toUpperCase()));
+                    defaultConfiguration.setScriptPolicy(ScriptPolicy.valueOf(properties.getProperty("scriptPolicy").toUpperCase()));
                     defaultConfiguration.setScriptLocation(properties.getProperty("scriptLocation"));
                     
                 } catch (IOException ex) {
@@ -177,6 +188,7 @@ public class Context{
             result.defaultScript = (defaultScript == null || defaultScript.length()==0 ? other.defaultScript : defaultScript);
             result.dynamicLanguage = (dynamicLanguage == null || dynamicLanguage.length()==0 ? other.dynamicLanguage : dynamicLanguage);
             result.interceptionPolicy = (interceptionPolicy == null ? other.interceptionPolicy : interceptionPolicy);
+            result.scriptPolicy = (scriptPolicy == null ? other.scriptPolicy : scriptPolicy);
             result.postInvokeFunction = (postInvokeFunction == null || preInvokeFunction.length()==0 ? other.postInvokeFunction : postInvokeFunction);
             result.preInvokeFunction = (preInvokeFunction == null || preInvokeFunction.length()==0 ? other.preInvokeFunction : preInvokeFunction);
             result.scriptExtension = (scriptExtension == null || scriptExtension.length()==0 ? other.scriptExtension : scriptExtension);
@@ -202,6 +214,11 @@ public class Context{
             return interceptionPolicy;
         }
 
+        public ScriptPolicy getScriptPolicy() {
+            return scriptPolicy;
+        }
+
+        
         public String getPostInvokeFunction() {
             return postInvokeFunction;
         }
@@ -237,6 +254,13 @@ public class Context{
             this.interceptionPolicy = interceptionPolicy;
         }
 
+        public void setScriptPolicy(ScriptPolicy scriptPolicy) {
+            if(scriptPolicy==ScriptPolicy.UNSPECIFIED){
+                scriptPolicy= ScriptPolicy.DEFAULT_AND_SELF;
+            }
+            this.scriptPolicy = scriptPolicy;
+        }
+        
         public void setPostInvokeFunction(String postInvokeFunction) {
             this.postInvokeFunction = postInvokeFunction;
         }

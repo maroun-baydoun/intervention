@@ -16,6 +16,7 @@
 package com.mb.intervention.annotations;
 
 import com.mb.intervention.context.InterceptionPolicy;
+import com.mb.intervention.context.ScriptPolicy;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -30,4 +31,5 @@ public @interface Dynamic {
     public String id() default "";
     public String script() default "";
     public InterceptionPolicy interceptionPolicy() default InterceptionPolicy.UNSPECIFIED;
+    public ScriptPolicy scriptPolicy() default ScriptPolicy.UNSPECIFIED;
 }

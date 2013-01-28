@@ -17,6 +17,7 @@
 package com.mb.intervention.annotations;
 
 import com.mb.intervention.context.InterceptionPolicy;
+import com.mb.intervention.context.ScriptPolicy;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -66,4 +67,6 @@ public @interface Configuration {
      * The global {@link InterceptionPolicy} for all dynamic classes. Defaults to {@code InterceptionPolicy.ALL}
      */
     public InterceptionPolicy interceptionPolicy() default InterceptionPolicy.ALL;
+    
+    public ScriptPolicy  scriptPolicy() default ScriptPolicy.DEFAULT_AND_SELF;
 }

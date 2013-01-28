@@ -63,6 +63,7 @@ public class AnnotationContextProvider extends ContextProvider {
                     contextEntry.setDynamicClass(dynamicClass);
                     contextEntry.setDynamicClassId(dynamicAnnotation.id());
                     contextEntry.setInterceptionPolicy(dynamicAnnotation.interceptionPolicy());
+                    contextEntry.setScriptPolicy(dynamicAnnotation.scriptPolicy());
                     contextEntry.setScript(dynamicAnnotation.script());
                     
                     Method[] dynamicClassMethods=dynamicClass.getMethods();
@@ -96,6 +97,7 @@ public class AnnotationContextProvider extends ContextProvider {
                         configuration.setPostInvokeFunction(configurationAnnotation.postInvokeFunction());
                         configuration.setPreInvokeFunction(configurationAnnotation.preInvokeFunction());
                         configuration.setInterceptionPolicy(configurationAnnotation.interceptionPolicy());
+                        configuration.setScriptPolicy(configurationAnnotation.scriptPolicy());
                         configuration.setScriptLocation(configurationAnnotation.scriptLocation());
 
                         configurationDiscovered(configuration);
