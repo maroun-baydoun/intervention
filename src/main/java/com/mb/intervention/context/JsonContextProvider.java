@@ -36,15 +36,14 @@ public class JsonContextProvider extends ContextProvider {
     private static final String DYNAMIC_INTERCEPTION_POLICY_PROP = "interceptionPolicy";
     private static final String DYNAMIC_EXCLUDE_PROP = "exclude";
 
-
     public JsonContextProvider(Reader jsonReader) {
         this.jsonContextReader = jsonReader;
     }
 
     @Override
-    public void build() throws InterventionException{
-        
-        try {           
+    public void build() throws InterventionException {
+
+        try {
 
             Gson gson = new Gson();
             Map<String, Object> contextMap = gson.fromJson(jsonContextReader, Map.class);
@@ -92,25 +91,22 @@ public class JsonContextProvider extends ContextProvider {
         configuration.setScriptExtension(configurationMap.get("scriptExtension"));
         configuration.setScriptLocation(configurationMap.get("scriptLocation"));
 
-        String configurationInterceptionPolicy = configurationMap.get("interceptionPolicy");
+        String interceptionPolicy = configurationMap.get("interceptionPolicy");
 
-        if (configurationInterceptionPolicy != null) {
-
-            try {
-
-                configuration.setInterceptionPolicy(InterceptionPolicy.valueOf(configurationInterceptionPolicy));
-           
-            } catch (IllegalArgumentException ex) {
-
-                throw new InterventionException("context_error", ex, ex.getLocalizedMessage());
-                
-            }
+        if (interceptionPolicy != null) {
+            configuration.setInterceptionPolicy((InterceptionPolicy)enumValueFromString(InterceptionPolicy.class, interceptionPolicy));
+        }
+        
+        String scriptPolicy = configurationMap.get("scriptPolicy");
+        
+        if (scriptPolicy != null) {
+            configuration.setScriptPolicy((ScriptPolicy)enumValueFromString(ScriptPolicy.class, scriptPolicy));
         }
 
         return configuration;
     }
 
-    private Context.ContextEntry buildContextEntryFromMap(Map<String, Object> dynamicMap) throws InterventionException{
+    private Context.ContextEntry buildContextEntryFromMap(Map<String, Object> dynamicMap) throws InterventionException {
 
         Context.ContextEntry contextEntry = null;
 
@@ -123,9 +119,9 @@ public class JsonContextProvider extends ContextProvider {
                 contextEntry.setDynamicClass(dynamiClass);
 
             } catch (ClassNotFoundException ex) {
-                
+
                 throw new InterventionException("class_not_found", ex, dynamicClassName);
-                
+
             }
 
             if (contextEntry != null) {
@@ -134,20 +130,17 @@ public class JsonContextProvider extends ContextProvider {
 
                 contextEntry.setInterceptionPolicy(InterceptionPolicy.ALL);
 
-                String configurationInterceptionPolicy = (String) dynamicMap.get(DYNAMIC_INTERCEPTION_POLICY_PROP);
+                String interceptionPolicy = (String) dynamicMap.get(DYNAMIC_INTERCEPTION_POLICY_PROP);
 
-                if (configurationInterceptionPolicy != null) {
-
-                    try {
-
-                        contextEntry.setInterceptionPolicy(InterceptionPolicy.valueOf(configurationInterceptionPolicy));
-                    
-                    } catch (IllegalArgumentException ex) {
-
-                        throw new InterventionException("context_error", ex,ex.getLocalizedMessage());
-                    }
+                if (interceptionPolicy != null) {
+                    contextEntry.setInterceptionPolicy((InterceptionPolicy)enumValueFromString(InterceptionPolicy.class,interceptionPolicy)); 
                 }
 
+                String scriptPolicy = (String) dynamicMap.get(DYNAMIC_INTERCEPTION_POLICY_PROP);
+
+                if (scriptPolicy != null) {
+                    contextEntry.setScriptPolicy((ScriptPolicy)enumValueFromString(ScriptPolicy.class,scriptPolicy)); 
+                }
 
                 try {
 
@@ -160,14 +153,27 @@ public class JsonContextProvider extends ContextProvider {
                     }
 
                 } catch (ClassCastException ex) {
-                    throw new InterventionException("context_property_array", ex,DYNAMIC_EXCLUDE_PROP);
+                    throw new InterventionException("context_property_array", ex, DYNAMIC_EXCLUDE_PROP);
                 }
 
             }
         } else {
-            throw new InterventionException("context_property_required","class");
+            throw new InterventionException("context_property_required", "class");
         }
 
         return contextEntry;
+    }
+
+    
+    private static Enum enumValueFromString(Class enumClass, String enumKey) {
+
+        try {
+
+            return Enum.valueOf(enumClass, enumKey);
+
+        } catch (IllegalArgumentException ex) {
+
+            throw new InterventionException("context_error", ex, ex.getLocalizedMessage());
+        }
     }
 }

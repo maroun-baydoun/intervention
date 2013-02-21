@@ -255,6 +255,7 @@ public class Context{
         }
 
         public void setScriptPolicy(ScriptPolicy scriptPolicy) {
+            
             if(scriptPolicy==ScriptPolicy.UNSPECIFIED){
                 scriptPolicy= ScriptPolicy.DEFAULT_AND_SELF;
             }

@@ -62,8 +62,8 @@ public class ProxyMethodHandler implements MethodHandler {
 
         ScriptPolicy scriptPolicy=contextEntry.getScriptPolicy();
         
-        
-        if(scriptPolicy==ScriptPolicy.UNSPECIFIED){
+
+        if(scriptPolicy==null || scriptPolicy==ScriptPolicy.UNSPECIFIED){
             scriptPolicy=GLOBAL_SCRIPT_POLICY;
         }
 
