@@ -132,7 +132,7 @@ public class Context{
 
     public static class Configuration {
 
-        private static final String DEFAULT_CONFIG_FILE="../defaults.properties";
+        private static final String DEFAULT_CONFIG_FILE="/com/mb/intervention/defaults.properties";
         
         private String defaultScript;
         private String dynamicLanguage;
@@ -161,7 +161,10 @@ public class Context{
 
                 try {
                     Properties properties = new Properties();
-                    properties.load(AnnotationContextProvider.class.getResourceAsStream(DEFAULT_CONFIG_FILE));
+                   
+                    properties.load(Context.class.getResourceAsStream(DEFAULT_CONFIG_FILE));
+                    
+                    
 
                     defaultConfiguration = new Configuration();
                     defaultConfiguration.setDefaultScript(properties.getProperty("defaultScript"));
