@@ -49,7 +49,7 @@ public enum InterceptionPolicy {
     GETTERS_SETTERS,
     
     /**
-     * No policy is specified.
+     * No policy is specified. Defaults to {@code InterceptionPolicy.ALL} when no global InterceptionPolicy is specified.
      */
     UNSPECIFIED;
 

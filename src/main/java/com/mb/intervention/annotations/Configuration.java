@@ -24,7 +24,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Represents an annotation-based global configuration
+ * Represents an annotation-based global configuration.
  *
  * @author Maroun Baydoun <maroun.baydoun@gmail.com>
  */
@@ -33,7 +33,7 @@ import java.lang.annotation.Target;
 public @interface Configuration {
 
     /**
-     * The default script file name
+     * The default script file name.
      */
     public String defaultScript() default "";
 
@@ -68,5 +68,8 @@ public @interface Configuration {
      */
     public InterceptionPolicy interceptionPolicy() default InterceptionPolicy.ALL;
     
+    /**
+     * The global {@link ScriptPolicy} for all dynamic classes. Defaults to {@code ScriptPolicy.DEFAULT_AND_SELF}
+     */
     public ScriptPolicy  scriptPolicy() default ScriptPolicy.DEFAULT_AND_SELF;
 }
