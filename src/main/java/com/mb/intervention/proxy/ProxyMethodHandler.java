@@ -19,6 +19,7 @@ package com.mb.intervention.proxy;
 import com.mb.intervention.ObjectFactory;
 import com.mb.intervention.context.Context.ContextEntry;
 import com.mb.intervention.context.ScriptPolicy;
+import com.mb.intervention.exceptions.InterventionException;
 import com.mb.intervention.script.DynamicScriptEngine;
 import java.lang.reflect.Method;
 import javassist.util.proxy.MethodHandler;
@@ -26,7 +27,7 @@ import javax.script.ScriptException;
 
 public class ProxyMethodHandler implements MethodHandler {
 
-    private ContextEntry contextEntry;
+    private final ContextEntry contextEntry;
     private static final String PRE_INVOKE_FUNCTION = ObjectFactory.getInstance().getContext().getConfiguration().getPreInvokeFunction();
     private static final String POST_INVOKE_FUNCTION = ObjectFactory.getInstance().getContext().getConfiguration().getPostInvokeFunction();
     private static final String DEFAULT_SCRIPT = ObjectFactory.getInstance().getContext().getConfiguration().getDefaultScript();
@@ -60,11 +61,11 @@ public class ProxyMethodHandler implements MethodHandler {
         DynamicScriptEngine dynamicScriptEngine = DynamicScriptEngine.getInstance();
         DynamicScriptEngine defaultScriptEngine = DynamicScriptEngine.getDefaultInstance();
 
-        ScriptPolicy scriptPolicy=contextEntry.getScriptPolicy();
+        ScriptPolicy scriptPolicy = contextEntry.getScriptPolicy();
         
 
         if(scriptPolicy==null || scriptPolicy==ScriptPolicy.UNSPECIFIED){
-            scriptPolicy=GLOBAL_SCRIPT_POLICY;
+            scriptPolicy = GLOBAL_SCRIPT_POLICY;
         }
 
         boolean evaluateDefaultScript=scriptPolicy==ScriptPolicy.DEFAULT_AND_SELF || scriptPolicy==ScriptPolicy.DEFAULT_ONLY;
@@ -84,6 +85,8 @@ public class ProxyMethodHandler implements MethodHandler {
                 return null;
             }
         }
+        
+        invokeResult = selfScriptInvoke(dynamicScriptEngine,contextEntry, object, methodName, arguments);
         
         invokeResult = original.invoke(object, arguments);
         
@@ -132,5 +135,15 @@ public class ProxyMethodHandler implements MethodHandler {
    }
    
    
+   private static Object selfScriptInvoke(DynamicScriptEngine dynamicScriptEngine,ContextEntry contextEntry,Object object,String methodName,Object[] arguments) throws ScriptException, NoSuchMethodException{
+       
+       
+        dynamicScriptEngine.evalScript(contextEntry.getScript()); 
+
+        Object invokeResult = dynamicScriptEngine.invoke(methodName, object, arguments);
+
+        return invokeResult;
+      
+   }
    
 }

@@ -136,7 +136,7 @@ public class DynamicScriptEngine {
 
     }
 
-    public Object invoke(String functionName, Object... args) throws ScriptException,NoSuchMethodException{
+    public Object invoke(String functionName, Object... args){
 
         Object functionReturn = null;
 
