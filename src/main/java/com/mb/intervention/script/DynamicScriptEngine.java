@@ -141,7 +141,15 @@ public class DynamicScriptEngine {
         Object functionReturn = null;
 
         try {
-            functionReturn = invocableEngine.invokeFunction(functionName, args);
+            
+            boolean functionExists = (Boolean) this.engine.eval("typeof " + functionName + " === 'function' "
+                                                                + "? java.lang.Boolean.TRUE "
+                                                                + ": java.lang.Boolean.FALSE");
+            if(functionExists){
+            
+                functionReturn = invocableEngine.invokeFunction(functionName, args);
+            }
+            
         } catch (ScriptException ex) {
             throw new InterventionException("script_exception_occurred",ex,this.currentScriptName,SCRIPT_EXTENSION,ex.getLineNumber());
         } catch (NoSuchMethodException ex) {
