@@ -150,4 +150,11 @@ public class DynamicScriptEngine {
 
         return functionReturn;
     }
+    
+    
+    public void put(String key, Object value) throws IllegalArgumentException, NullPointerException{
+       
+        this.engine.put(key, value);
+      
+    }
 }

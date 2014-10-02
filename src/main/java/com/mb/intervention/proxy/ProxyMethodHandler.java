@@ -19,7 +19,6 @@ package com.mb.intervention.proxy;
 import com.mb.intervention.ObjectFactory;
 import com.mb.intervention.context.Context.ContextEntry;
 import com.mb.intervention.context.ScriptPolicy;
-import com.mb.intervention.exceptions.InterventionException;
 import com.mb.intervention.script.DynamicScriptEngine;
 import java.lang.reflect.Method;
 import javassist.util.proxy.MethodHandler;
@@ -71,8 +70,11 @@ public class ProxyMethodHandler implements MethodHandler {
         boolean evaluateDefaultScript=scriptPolicy==ScriptPolicy.DEFAULT_AND_SELF || scriptPolicy==ScriptPolicy.DEFAULT_ONLY;
         boolean evaluateSelfScript=scriptPolicy==ScriptPolicy.DEFAULT_AND_SELF || scriptPolicy==ScriptPolicy.SELF_ONLY;
         
+        dynamicScriptEngine.put("object", object);
+        defaultScriptEngine.put("object", object);
+        
         if(evaluateDefaultScript){
-            if(defaultScriptPreInvoke(defaultScriptEngine, contextEntry, object, methodName, arguments)){
+            if(defaultScriptPreInvoke(defaultScriptEngine, contextEntry, methodName, arguments)){
 
                 return null;
             }
@@ -80,67 +82,67 @@ public class ProxyMethodHandler implements MethodHandler {
         
         if(evaluateSelfScript){
         
-            if(selfScriptPreInvoke(dynamicScriptEngine, contextEntry, object, methodName, arguments)){
+            if(selfScriptPreInvoke(dynamicScriptEngine, contextEntry, methodName, arguments)){
 
                 return null;
             }
         }
         
-        invokeResult = selfScriptInvoke(dynamicScriptEngine,contextEntry, object, methodName, arguments);
+        invokeResult = selfScriptInvoke(dynamicScriptEngine,contextEntry, methodName, arguments);
         
         invokeResult = original.invoke(object, arguments);
         
         
         if(evaluateSelfScript){
-            selfScriptPostInvoke(dynamicScriptEngine, object, methodName, arguments);
+            selfScriptPostInvoke(dynamicScriptEngine, methodName, arguments);
         }
         
         if(evaluateDefaultScript){
-            defaultScriptPostInvoke(defaultScriptEngine, contextEntry, object, methodName, arguments);
+            defaultScriptPostInvoke(defaultScriptEngine, contextEntry, methodName, arguments);
         }
     
         return invokeResult;
     }
     
-   private static boolean defaultScriptPreInvoke(DynamicScriptEngine defaultScriptEngine,ContextEntry contextEntry,Object object,String methodName,Object[] arguments) throws ScriptException, NoSuchMethodException{
+   private static boolean defaultScriptPreInvoke(DynamicScriptEngine defaultScriptEngine,ContextEntry contextEntry,String methodName,Object[] arguments) throws ScriptException, NoSuchMethodException{
        
        defaultScriptEngine.evalScript(DEFAULT_SCRIPT);
 
-       Object invokeResult = defaultScriptEngine.invoke(PRE_INVOKE_FUNCTION, contextEntry.getDynamicClassId(), object, methodName, arguments);
+       Object invokeResult = defaultScriptEngine.invoke(PRE_INVOKE_FUNCTION, contextEntry.getDynamicClassId(), methodName, arguments);
 
        return ((invokeResult instanceof Boolean) && Boolean.parseBoolean(invokeResult.toString()) == false); 
 
    }
    
-   private static void defaultScriptPostInvoke(DynamicScriptEngine defaultScriptEngine,ContextEntry contextEntry,Object object,String methodName,Object[] arguments) throws ScriptException, NoSuchMethodException{
+   private static void defaultScriptPostInvoke(DynamicScriptEngine defaultScriptEngine,ContextEntry contextEntry,String methodName,Object[] arguments) throws ScriptException, NoSuchMethodException{
        
-       defaultScriptEngine.invoke(POST_INVOKE_FUNCTION, contextEntry.getDynamicClassId(), object, methodName, arguments);
+       defaultScriptEngine.invoke(POST_INVOKE_FUNCTION, contextEntry.getDynamicClassId(), methodName, arguments);
 
    }
    
-   private static boolean selfScriptPreInvoke(DynamicScriptEngine dynamicScriptEngine,ContextEntry contextEntry,Object object,String methodName,Object[] arguments) throws ScriptException, NoSuchMethodException{
+   private static boolean selfScriptPreInvoke(DynamicScriptEngine dynamicScriptEngine,ContextEntry contextEntry,String methodName,Object[] arguments) throws ScriptException, NoSuchMethodException{
        
       dynamicScriptEngine.evalScript(contextEntry.getScript()); 
 
-      Object invokeResult = dynamicScriptEngine.invoke(PRE_INVOKE_FUNCTION, object, methodName, arguments);
+      Object invokeResult = dynamicScriptEngine.invoke(PRE_INVOKE_FUNCTION, methodName, arguments);
 
       return ((invokeResult instanceof Boolean) && Boolean.parseBoolean(invokeResult.toString()) == false);
 
    }
    
-   private static void selfScriptPostInvoke(DynamicScriptEngine dynamicScriptEngine, Object object,String methodName,Object[] arguments) throws ScriptException, NoSuchMethodException{
+   private static void selfScriptPostInvoke(DynamicScriptEngine dynamicScriptEngine, String methodName,Object[] arguments) throws ScriptException, NoSuchMethodException{
        
-      dynamicScriptEngine.invoke(POST_INVOKE_FUNCTION,object, methodName, arguments);
+      dynamicScriptEngine.invoke(POST_INVOKE_FUNCTION, methodName, arguments);
 
    }
    
    
-   private static Object selfScriptInvoke(DynamicScriptEngine dynamicScriptEngine,ContextEntry contextEntry,Object object,String methodName,Object[] arguments) throws ScriptException, NoSuchMethodException{
+   private static Object selfScriptInvoke(DynamicScriptEngine dynamicScriptEngine,ContextEntry contextEntry,String methodName,Object[] arguments) throws ScriptException, NoSuchMethodException{
        
        
         dynamicScriptEngine.evalScript(contextEntry.getScript()); 
 
-        Object invokeResult = dynamicScriptEngine.invoke(methodName, object, arguments);
+        Object invokeResult = dynamicScriptEngine.invoke(methodName, arguments);
 
         return invokeResult;
       
