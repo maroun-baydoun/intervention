@@ -88,9 +88,13 @@ public class ProxyMethodHandler implements MethodHandler {
             }
         }
         
+        invokeResult = selfScriptMethodPreInvoke(dynamicScriptEngine, contextEntry, methodName, arguments);
+        
         invokeResult = selfScriptInvoke(dynamicScriptEngine,contextEntry, methodName, arguments);
         
         invokeResult = original.invoke(object, arguments);
+        
+        selfScripMethodtPostInvoke(dynamicScriptEngine, methodName, arguments);
         
         
         if(evaluateSelfScript){
@@ -136,6 +140,26 @@ public class ProxyMethodHandler implements MethodHandler {
 
    }
    
+   
+   private static boolean selfScriptMethodPreInvoke(DynamicScriptEngine dynamicScriptEngine,ContextEntry contextEntry,String methodName,Object[] arguments) throws ScriptException, NoSuchMethodException{
+       
+      dynamicScriptEngine.evalScript(contextEntry.getScript()); 
+
+      methodName = "pre" + methodName.substring(0,1).toUpperCase() + methodName.substring(1);
+      
+      Object invokeResult = dynamicScriptEngine.invoke(methodName, arguments);
+
+      return ((invokeResult instanceof Boolean) && Boolean.parseBoolean(invokeResult.toString()) == false);
+
+   }
+   
+   private static void selfScripMethodtPostInvoke(DynamicScriptEngine dynamicScriptEngine, String methodName,Object[] arguments) throws ScriptException, NoSuchMethodException{
+       
+      methodName = "post" + methodName.substring(0,1).toUpperCase() + methodName.substring(1);
+       
+      dynamicScriptEngine.invoke(methodName, arguments);
+
+   }
    
    private static Object selfScriptInvoke(DynamicScriptEngine dynamicScriptEngine,ContextEntry contextEntry,String methodName,Object[] arguments) throws ScriptException, NoSuchMethodException{
        
