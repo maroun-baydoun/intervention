@@ -80,24 +80,35 @@ public class ProxyMethodHandler implements MethodHandler {
             }
         }
         
+        boolean shouldInvokeOriginalMethod = true;
+        
         if(evaluateSelfScript){
         
             if(selfScriptPreInvoke(dynamicScriptEngine, contextEntry, methodName, arguments)){
 
                 return null;
             }
+            
+            if(selfScriptMethodPreInvoke(dynamicScriptEngine, contextEntry, methodName, arguments)){
+                
+                return null;
+            }
+            
+            if(dynamicScriptEngine.hasFunction(methodName)){
+                
+                invokeResult = selfScriptInvoke(dynamicScriptEngine,contextEntry, methodName, arguments);
+                
+                shouldInvokeOriginalMethod = false;
+            }
         }
         
-        invokeResult = selfScriptMethodPreInvoke(dynamicScriptEngine, contextEntry, methodName, arguments);
-        
-        invokeResult = selfScriptInvoke(dynamicScriptEngine,contextEntry, methodName, arguments);
-        
-        invokeResult = original.invoke(object, arguments);
-        
-        selfScripMethodtPostInvoke(dynamicScriptEngine, methodName, arguments);
-        
+        if(shouldInvokeOriginalMethod){
+            
+            invokeResult = original.invoke(object, arguments);
+        }
         
         if(evaluateSelfScript){
+            selfScripMethodtPostInvoke(dynamicScriptEngine, methodName, arguments);
             selfScriptPostInvoke(dynamicScriptEngine, methodName, arguments);
         }
         

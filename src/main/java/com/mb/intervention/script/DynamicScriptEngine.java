@@ -136,16 +136,13 @@ public class DynamicScriptEngine {
 
     }
 
-    public Object invoke(String functionName, Object... args){
+    public Object invoke(String functionName, Object... args) throws InterventionException{
 
         Object functionReturn = null;
 
         try {
             
-            boolean functionExists = (Boolean) this.engine.eval("typeof " + functionName + " === 'function' "
-                                                                + "? java.lang.Boolean.TRUE "
-                                                                + ": java.lang.Boolean.FALSE");
-            if(functionExists){
+            if(this.hasFunction(functionName)){
             
                 functionReturn = invocableEngine.invokeFunction(functionName, args);
             }
@@ -159,10 +156,28 @@ public class DynamicScriptEngine {
         return functionReturn;
     }
     
+   
     
     public void put(String key, Object value) throws IllegalArgumentException, NullPointerException{
        
         this.engine.put(key, value);
       
+    }
+    
+    
+     public boolean hasFunction(String functionName) throws InterventionException{
+        
+         try{
+            boolean functionExists = (Boolean) this.engine.eval("typeof " + functionName + " === 'function' "
+                                                                     + "? java.lang.Boolean.TRUE "
+                                                                     + ": java.lang.Boolean.FALSE");
+
+            return functionExists;
+         }
+         catch(ScriptException ex){
+             
+             throw new InterventionException("script_exception_occurred",ex,this.currentScriptName,SCRIPT_EXTENSION,ex.getLineNumber());
+         }
+        
     }
 }
