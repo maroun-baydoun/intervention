@@ -26,7 +26,7 @@ import java.lang.reflect.Method;
 
 public class AnnotationContextProvider extends ContextProvider {
 
-    private ClassAnnotationScannerListener classAnnotationDiscoveryListener;
+    private final ClassAnnotationScannerListener classAnnotationDiscoveryListener;
     
 
     public AnnotationContextProvider() {
@@ -58,10 +58,15 @@ public class AnnotationContextProvider extends ContextProvider {
                     Class dynamicClass = Class.forName(className);
                     Dynamic dynamicAnnotation = (Dynamic) dynamicClass.getAnnotation(Dynamic.class);
 
-
+                    String dynamicClassId = dynamicAnnotation.id();
+                 
+                    if(dynamicClassId.length()==0){
+                        dynamicClassId = className;
+                    }
+                    System.out.println(dynamicClassId);
                     Context.ContextEntry contextEntry = new Context.ContextEntry();
                     contextEntry.setDynamicClass(dynamicClass);
-                    contextEntry.setDynamicClassId(dynamicAnnotation.id());
+                    contextEntry.setDynamicClassId(dynamicClassId);
                     contextEntry.setInterceptionPolicy(dynamicAnnotation.interceptionPolicy());
                     contextEntry.setScriptPolicy(dynamicAnnotation.scriptPolicy());
                     contextEntry.setScript(dynamicAnnotation.script());
